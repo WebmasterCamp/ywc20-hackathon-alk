@@ -196,7 +196,7 @@ export default function ServicePage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 mt-20">
             {/* Mobile Header */}
             <div className="lg:hidden bg-white border-b px-4 py-3">
                 <div className="flex items-center gap-3">

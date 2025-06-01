@@ -3,6 +3,7 @@ import { Sarabun } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
+import LayoutWrapper from "@/components/layout-wrapper";
 
 const sarabun = Sarabun({
   subsets: ["latin"],
@@ -24,9 +25,7 @@ export default function RootLayout({
       <body
         className={`${sarabun.className} antialiased`}
       >
-        <Navbar />
-        {children}
-        <Footer />
+        <LayoutWrapper>{children}</LayoutWrapper>
       </body>
     </html>
   );

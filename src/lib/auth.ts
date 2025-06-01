@@ -1,11 +1,17 @@
 import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { db } from "@/db";
+import { createPool } from "mysql2/promise";
 import { nextCookies } from "better-auth/next-js";
+import { URL } from 'url';
   
+const dbUrl = new URL(process.env.DATABASE_URL as string);
+
 export const auth = betterAuth({
-    database: drizzleAdapter(db, {
-        provider: "mysql",
+    database: createPool({
+        host: dbUrl.hostname,
+        port: dbUrl.port,
+        user: dbUrl.username,
+        password: dbUrl.password,
+        database: dbUrl.pathname.slice(1),
     }),
     socialProviders: {
             google: { 
