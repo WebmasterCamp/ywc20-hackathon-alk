@@ -44,7 +44,7 @@ const services: Service[] = [
 ]
 
 export default function Home() {
-    const [collections, setCollections] = useState<Collection[]>([]);
+    const [, setCollections] = useState<Collection[]>([]);
 
     useEffect(() => {
         const fetchCollections = async () => {
