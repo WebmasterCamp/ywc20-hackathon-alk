@@ -18,6 +18,7 @@ import {
     createOrder,
     TempleServiceDetail,
 } from "@/actions/temple";
+import { authClient } from "@/lib/auth-client";
 
 function getServiceNameThai(serviceType: string): string {
     const serviceNames: { [key: string]: string } = {
@@ -46,6 +47,7 @@ const SERVICES = ["car", "home", "birth", "company", "wedding"];
 export default function TempleDetailPage() {
     const { service, temple } = useParams();
     const router = useRouter();
+    const { data: session, isPending } = authClient.useSession();
 
     const [templeData, setTempleData] = useState<TempleServiceDetail | null>(
         null
@@ -58,9 +60,6 @@ export default function TempleDetailPage() {
     const [selectedTime, setSelectedTime] = useState("");
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [submitting, setSubmitting] = useState(false);
-
-    // Mock user ID - In real app, get from auth
-    const userId = "mock-user-id";
 
     useEffect(() => {
         if (typeof service === "string" && typeof temple === "string") {
@@ -128,6 +127,13 @@ export default function TempleDetailPage() {
     };
 
     const handleSubmit = async () => {
+        // Check if user is authenticated
+        if (!session?.user) {
+            alert("กรุณาเข้าสู่ระบบก่อนทำการจอง");
+            router.push("/auth");
+            return;
+        }
+
         if (!validateForm() || !templeData) return;
 
         setSubmitting(true);
@@ -148,7 +154,7 @@ export default function TempleDetailPage() {
             // Create datetime from selected date and time
             const dateTime = new Date(`${selectedDate}T${selectedTime}:00`);
 
-            const result = await createOrder(userId, {
+            const result = await createOrder(session.user.id, {
                 serviceId: templeData.service.id,
                 responses,
                 date: dateTime,
@@ -199,7 +205,8 @@ export default function TempleDetailPage() {
         );
     }
 
-    if (loading) {
+    // Show loading while checking authentication
+    if (isPending || loading) {
         return (
             <div className="min-h-screen bg-gray-50">
                 {/* Mobile Header */}
@@ -225,6 +232,36 @@ export default function TempleDetailPage() {
                         <div className="h-8 bg-gray-200 rounded w-3/4 animate-pulse"></div>
                         <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse"></div>
                         <div className="h-20 bg-gray-200 rounded animate-pulse"></div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Show authentication required message
+    if (!session?.user) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center max-w-md mx-auto p-6">
+                    <h1 className="text-2xl font-bold text-gray-800 mb-4">
+                        จำเป็นต้องเข้าสู่ระบบ
+                    </h1>
+                    <p className="text-gray-600 mb-6">
+                        กรุณาเข้าสู่ระบบเพื่อทำการจองบริการ
+                    </p>
+                    <div className="space-y-3">
+                        <button
+                            onClick={() => router.push("/auth")}
+                            className="w-full bg-yellow-normal hover:bg-yellow-normal-hover text-white font-medium py-3 px-6 rounded-lg transition-colors"
+                        >
+                            เข้าสู่ระบบ
+                        </button>
+                        <button
+                            onClick={() => router.back()}
+                            className="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-6 rounded-lg transition-colors"
+                        >
+                            กลับไปหน้าก่อนหน้า
+                        </button>
                     </div>
                 </div>
             </div>
