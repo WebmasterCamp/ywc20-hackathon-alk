@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
     MapPin,
     Navigation,
@@ -10,6 +10,99 @@ import {
     ChevronDown,
     Home,
 } from "lucide-react";
+
+// Declare Leaflet types for window object
+declare global {
+    interface Window {
+        L: {
+            map: (element: HTMLElement, options?: MapOptions) => LeafletMap;
+            tileLayer: (
+                url: string,
+                options?: TileLayerOptions
+            ) => LeafletTileLayer;
+            control: {
+                zoom: (options?: ZoomControlOptions) => LeafletControl;
+            };
+            divIcon: (options?: DivIconOptions) => LeafletIcon;
+            marker: (
+                latlng: [number, number],
+                options?: MarkerOptions
+            ) => LeafletMarker;
+        };
+    }
+}
+
+// Leaflet options interfaces
+interface MapOptions {
+    zoomControl?: boolean;
+    attributionControl?: boolean;
+}
+
+interface TileLayerOptions {
+    maxZoom?: number;
+}
+
+interface ZoomControlOptions {
+    position?: string;
+}
+
+interface DivIconOptions {
+    html?: string;
+    className?: string;
+    iconSize?: [number, number];
+    iconAnchor?: [number, number];
+}
+
+interface MarkerOptions {
+    icon?: LeafletIcon;
+    draggable?: boolean;
+}
+
+// Leaflet type definitions
+interface LeafletMap {
+    setView: (latlng: [number, number], zoom: number) => LeafletMap;
+    on: (event: string, handler: (e: LeafletEvent) => void) => void;
+    remove: () => void;
+}
+
+interface LeafletTileLayer {
+    addTo: (map: LeafletMap) => LeafletTileLayer;
+}
+
+interface LeafletControl {
+    addTo: (map: LeafletMap) => LeafletControl;
+}
+
+interface LeafletIcon {
+    options?: DivIconOptions;
+}
+
+interface LeafletMarker {
+    addTo: (map: LeafletMap) => LeafletMarker;
+    on: (event: string, handler: (e: LeafletDragEvent) => void) => void;
+    setLatLng: (latlng: [number, number]) => LeafletMarker;
+    getLatLng: () => { lat: number; lng: number };
+}
+
+interface LeafletEvent {
+    latlng: { lat: number; lng: number };
+}
+
+interface LeafletDragEvent {
+    target: {
+        getLatLng: () => { lat: number; lng: number };
+    };
+}
+
+// Search result interface
+interface SearchResult {
+    lat: string;
+    lon: string;
+    display_name: string;
+    place_id: string;
+    osm_type: string;
+    osm_id: string;
+}
 
 interface LocationData {
     latitude: number;
@@ -30,8 +123,8 @@ const LocationPicker = ({
     className = "",
 }: LocationPickerProps) => {
     const mapRef = useRef<HTMLDivElement>(null);
-    const mapInstanceRef = useRef<any>(null);
-    const markerRef = useRef<any>(null);
+    const mapInstanceRef = useRef<LeafletMap | null>(null);
+    const markerRef = useRef<LeafletMarker | null>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
 
     const [isMapOpen, setIsMapOpen] = useState(false);
@@ -45,8 +138,33 @@ const LocationPicker = ({
     const [shortAddress, setShortAddress] = useState("");
     const [loading, setLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-    const [searchResults, setSearchResults] = useState<any[]>([]);
-    const [isSearching, setIsSearching] = useState(false);
+    const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+
+    const updateTempLocation = useCallback((lat: number, lng: number) => {
+        setTempLocation({ latitude: lat, longitude: lng });
+    }, []);
+
+    // Reverse geocode using Nominatim
+    const reverseGeocode = useCallback(async (lat: number, lng: number) => {
+        try {
+            const response = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=th,en`
+            );
+            const data = await response.json();
+
+            if (data.display_name) {
+                setAddress(data.display_name);
+                // Create short address from the display name
+                const parts = data.display_name.split(", ");
+                const shortAddr = parts.slice(0, 3).join(", ");
+                setShortAddress(shortAddr);
+            }
+        } catch (error) {
+            console.error("Reverse geocoding failed:", error);
+            setAddress("ไม่สามารถดึงที่อยู่ได้");
+            setShortAddress("ไม่สามารถดึงที่อยู่ได้");
+        }
+    }, []);
 
     // Load Leaflet when map is opened
     useEffect(() => {
@@ -77,13 +195,13 @@ const LocationPicker = ({
             if (!mapRef.current || mapInstanceRef.current) return;
 
             // Initialize map
-            const map = (window as any).L.map(mapRef.current, {
+            const map = window.L.map(mapRef.current, {
                 zoomControl: false,
                 attributionControl: false,
             }).setView([tempLocation.latitude, tempLocation.longitude], 16);
 
             // Add tile layer
-            (window as any).L.tileLayer(
+            window.L.tileLayer(
                 "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                 {
                     maxZoom: 19,
@@ -91,14 +209,14 @@ const LocationPicker = ({
             ).addTo(map);
 
             // Add zoom control to bottom right
-            (window as any).L.control
+            window.L.control
                 .zoom({
                     position: "bottomright",
                 })
                 .addTo(map);
 
             // Custom marker icon
-            const customIcon = (window as any).L.divIcon({
+            const customIcon = window.L.divIcon({
                 html: `<div style="background: #ef4444; width: 24px; height: 24px; border-radius: 50%; border: 4px solid white; box-shadow: 0 4px 8px rgba(0,0,0,0.3); position: relative;">
           <div style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid #ef4444;"></div>
         </div>`,
@@ -108,7 +226,7 @@ const LocationPicker = ({
             });
 
             // Add initial marker
-            const marker = (window as any).L.marker(
+            const marker = window.L.marker(
                 [tempLocation.latitude, tempLocation.longitude],
                 {
                     icon: customIcon,
@@ -117,14 +235,14 @@ const LocationPicker = ({
             ).addTo(map);
 
             // Handle marker drag
-            marker.on("dragend", (e: any) => {
+            marker.on("dragend", (e: LeafletDragEvent) => {
                 const position = e.target.getLatLng();
                 updateTempLocation(position.lat, position.lng);
                 reverseGeocode(position.lat, position.lng);
             });
 
             // Handle map click
-            map.on("click", (e: any) => {
+            map.on("click", (e: LeafletEvent) => {
                 const { lat, lng } = e.latlng;
                 marker.setLatLng([lat, lng]);
                 updateTempLocation(lat, lng);
@@ -148,33 +266,13 @@ const LocationPicker = ({
                 setMapLoaded(false);
             }
         };
-    }, [isMapOpen]);
-
-    const updateTempLocation = (lat: number, lng: number) => {
-        setTempLocation({ latitude: lat, longitude: lng });
-    };
-
-    // Reverse geocode using Nominatim
-    const reverseGeocode = async (lat: number, lng: number) => {
-        try {
-            const response = await fetch(
-                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=th,en`
-            );
-            const data = await response.json();
-
-            if (data.display_name) {
-                setAddress(data.display_name);
-                // Create short address from the display name
-                const parts = data.display_name.split(", ");
-                const shortAddr = parts.slice(0, 3).join(", ");
-                setShortAddress(shortAddr);
-            }
-        } catch (error) {
-            console.error("Reverse geocoding failed:", error);
-            setAddress("ไม่สามารถดึงที่อยู่ได้");
-            setShortAddress("ไม่สามารถดึงที่อยู่ได้");
-        }
-    };
+    }, [
+        isMapOpen,
+        tempLocation.latitude,
+        tempLocation.longitude,
+        updateTempLocation,
+        reverseGeocode,
+    ]);
 
     // Search for places
     const searchPlaces = async (query: string) => {
@@ -183,7 +281,6 @@ const LocationPicker = ({
             return;
         }
 
-        setIsSearching(true);
         try {
             const response = await fetch(
                 `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
@@ -196,7 +293,6 @@ const LocationPicker = ({
             console.error("Search failed:", error);
             setSearchResults([]);
         }
-        setIsSearching(false);
     };
 
     // Handle search input
@@ -206,7 +302,7 @@ const LocationPicker = ({
     };
 
     // Select search result
-    const selectSearchResult = (result: any) => {
+    const selectSearchResult = (result: SearchResult) => {
         const lat = parseFloat(result.lat);
         const lng = parseFloat(result.lon);
 
@@ -302,13 +398,13 @@ const LocationPicker = ({
                         <div className="bg-yellow-light p-2 rounded-lg">
                             <MapPin className="w-5 h-5 text-yellow-normal" />
                         </div>
-                        <div className="flex-1">
+                        <div className="">
                             {location ? (
                                 <div>
                                     <p className="text-sm text-gray-500">
                                         ที่อยู่ที่เลือก
                                     </p>
-                                    <p className="font-medium text-gray-800 truncate">
+                                    <p className="font-medium text-gray-800">
                                         {location.shortAddress}
                                     </p>
                                 </div>
@@ -317,7 +413,7 @@ const LocationPicker = ({
                                     <p className="text-sm text-gray-500">
                                         กำหนดที่อยู่
                                     </p>
-                                    <p className="font-medium text-gray-600">
+                                    <p className="font-medium text-gray-600 truncate">
                                         {placeholder}
                                     </p>
                                 </div>
@@ -445,11 +541,11 @@ const LocationPicker = ({
                         <div className="bg-gray-50 p-3 rounded-lg">
                             <div className="flex items-start gap-2">
                                 <Home className="w-5 h-5 text-yellow-normal mt-0.5 flex-shrink-0" />
-                                <div className="flex-1">
+                                <div className="flex-1 min-w-0">
                                     <p className="text-sm text-gray-600 mb-1">
                                         ที่อยู่ที่เลือก:
                                     </p>
-                                    <p className="text-gray-800 font-medium text-sm leading-relaxed">
+                                    <p className="text-gray-800 font-medium text-sm leading-relaxed break-words">
                                         {address || "กรุณาเลือกตำแหน่งบนแผนที่"}
                                     </p>
                                 </div>

@@ -191,7 +191,7 @@ export default function ServicePage() {
         }
     });
 
-    if (!SERVICES.includes(service)) {
+    if (typeof service !== "string" || !SERVICES.includes(service as string)) {
         return <div>Service not found</div>;
     }
 
@@ -261,7 +261,7 @@ export default function ServicePage() {
 
                             {selectedLocation && (
                                 <div className="mt-4 p-3 bg-yellow-light rounded-lg">
-                                    <p className="text-sm text-yellow-dark">
+                                    <p className="text-sm text-yellow-dark break-words">
                                         ✓ กำลังค้นหาวัดใกล้{" "}
                                         {selectedLocation.shortAddress}
                                     </p>
