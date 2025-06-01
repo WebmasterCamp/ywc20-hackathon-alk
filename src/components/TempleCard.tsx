@@ -1,5 +1,8 @@
+"use client";
+
 import React from "react";
 import { MapPin, Clock, Star, Phone, Navigation2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface Temple {
     id: string;
@@ -23,6 +26,8 @@ interface TempleCardProps {
 }
 
 const TempleCard = ({ temple, serviceType, onSelect }: TempleCardProps) => {
+    const router = useRouter();
+
     const getServiceName = (type: string) => {
         const serviceNames: { [key: string]: string } = {
             car: "บริการเจิมรถ",
@@ -41,13 +46,32 @@ const TempleCard = ({ temple, serviceType, onSelect }: TempleCardProps) => {
         return `${distance.toFixed(1)} กม.`;
     };
 
-    const openInMaps = () => {
+    const openInMaps = (e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent card click
         const url = `https://www.google.com/maps/dir/?api=1&destination=${temple.latitude},${temple.longitude}`;
         window.open(url, "_blank");
     };
 
+    const handleCardClick = () => {
+        // Navigate to temple detail page
+        router.push(`/${serviceType}/${temple.id}`);
+    };
+
+    const handleSelectClick = (e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent card click
+        if (onSelect) {
+            onSelect(temple);
+        } else {
+            // If no onSelect prop, navigate to detail page
+            router.push(`/${serviceType}/${temple.id}`);
+        }
+    };
+
     return (
-        <div className="bg-white rounded-xl border border-gray-200 hover:border-yellow-normal hover:shadow-lg transition-all duration-200 overflow-hidden">
+        <div
+            onClick={handleCardClick}
+            className="bg-white rounded-xl border border-gray-200 hover:border-yellow-normal hover:shadow-lg transition-all duration-200 overflow-hidden cursor-pointer"
+        >
             {/* Temple Image */}
             <div className="relative h-48 bg-gradient-to-br from-yellow-light to-yellow-normal">
                 {temple.image ? (
@@ -158,10 +182,10 @@ const TempleCard = ({ temple, serviceType, onSelect }: TempleCardProps) => {
                 {/* Action Buttons */}
                 <div className="flex gap-2">
                     <button
-                        onClick={() => onSelect?.(temple)}
+                        onClick={handleSelectClick}
                         className="flex-1 bg-yellow-normal hover:bg-yellow-normal-hover text-white font-medium py-2 px-4 rounded-lg transition-colors"
                     >
-                        เลือกวัดนี้
+                        จองบริการ
                     </button>
                     <button
                         onClick={openInMaps}

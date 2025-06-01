@@ -11,7 +11,7 @@ export default function AuthPage() {
         console.log(data);
     };
 
-    return (
+    return (    
         <div className="w-screen h-screen flex justify-center items-center">
             <button className="p-2 rounded-md bg-white text-black" onClick={() => signIn()}>Signin Google</button>
         </div>
