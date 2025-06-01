@@ -7,15 +7,32 @@ const dbUrl = new URL(process.env.DATABASE_URL as string);
 
 const db = createPool({
     host: dbUrl.hostname,
-    port: dbUrl.port,
+    port: parseInt(dbUrl.port),
     user: dbUrl.username,
     password: dbUrl.password,
     database: dbUrl.pathname.slice(1),
 });
 
+interface OrderRow {
+    id: number;
+    date: Date;
+    status: string;
+    responses: Record<string, unknown>;
+    createdAt: Date;
+    confirmedAt?: Date;
+    completedAt?: Date;
+    cancelledAt?: Date;
+    serviceType: string;
+    forms: Record<string, unknown>;
+    templeName: string;
+    templeSlug: string;
+    templeAddress: string;
+    templePhone: string;
+}
+
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         // Check authentication
@@ -30,7 +47,7 @@ export async function GET(
             );
         }
 
-        const orderId = params.id;
+        const { id: orderId } = await params;
 
         // Get order details with service forms and temple info
         const [orderRows] = await db.execute(
@@ -56,14 +73,14 @@ export async function GET(
             [orderId, session.user.id]
         );
 
-        if (!orderRows || (orderRows as any[]).length === 0) {
+        if (!orderRows || (orderRows as OrderRow[]).length === 0) {
             return NextResponse.json(
                 { error: "Order not found" },
                 { status: 404 }
             );
         }
 
-        const order = (orderRows as any[])[0];
+        const order = (orderRows as OrderRow[])[0];
 
         // Transform the data for frontend
         const orderDetail = {

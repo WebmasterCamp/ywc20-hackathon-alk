@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
     ArrowLeft,
     Calendar,
@@ -10,10 +10,9 @@ import {
     CheckCircle,
     XCircle,
     AlertCircle,
-    User,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
-import { useRouter, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 
 interface OrderDetail {
@@ -44,7 +43,6 @@ interface OrderDetail {
 
 export default function OrderDetailPage() {
     const { data: session, isPending } = authClient.useSession();
-    const router = useRouter();
     const params = useParams();
     const orderId = params.id as string;
 
@@ -52,13 +50,7 @@ export default function OrderDetailPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (session?.user && orderId) {
-            fetchOrderDetail();
-        }
-    }, [session, orderId]);
-
-    const fetchOrderDetail = async () => {
+    const fetchOrderDetail = useCallback(async () => {
         setLoading(true);
         setError(null);
 
@@ -78,7 +70,13 @@ export default function OrderDetailPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [orderId]);
+
+    useEffect(() => {
+        if (session?.user && orderId) {
+            fetchOrderDetail();
+        }
+    }, [session, orderId, fetchOrderDetail]);
 
     const getStatusColor = (status: string) => {
         switch (status) {

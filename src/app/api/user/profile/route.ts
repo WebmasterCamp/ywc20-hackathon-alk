@@ -7,11 +7,24 @@ const dbUrl = new URL(process.env.DATABASE_URL as string);
 
 const db = createPool({
     host: dbUrl.hostname,
-    port: dbUrl.port,
+    port: parseInt(dbUrl.port),
     user: dbUrl.username,
     password: dbUrl.password,
     database: dbUrl.pathname.slice(1),
 });
+
+interface UserRow {
+    id: string;
+    name: string;
+    email: string;
+    emailVerified?: Date;
+    image?: string;
+    phone?: string;
+    address?: string;
+    birthDate?: Date;
+    createdAt: Date;
+    updatedAt: Date;
+}
 
 export async function GET(request: NextRequest) {
     try {
@@ -35,7 +48,7 @@ export async function GET(request: NextRequest) {
             [session.user.id]
         );
 
-        const users = rows as any[];
+        const users = rows as UserRow[];
         if (users.length === 0) {
             return NextResponse.json(
                 { error: "User not found" },

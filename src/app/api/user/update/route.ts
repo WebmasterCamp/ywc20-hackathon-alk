@@ -7,7 +7,7 @@ const dbUrl = new URL(process.env.DATABASE_URL as string);
 
 const db = createPool({
     host: dbUrl.hostname,
-    port: dbUrl.port,
+    port: parseInt(dbUrl.port),
     user: dbUrl.username,
     password: dbUrl.password,
     database: dbUrl.pathname.slice(1),
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
             birthDate && birthDate.trim() !== "" ? birthDate : null;
 
         // Update user data in database
-        const [result] = await db.execute(
+        await db.execute(
             `UPDATE user 
              SET name = ?, phone = ?, address = ?, birthDate = ?, updatedAt = NOW()
              WHERE id = ?`,

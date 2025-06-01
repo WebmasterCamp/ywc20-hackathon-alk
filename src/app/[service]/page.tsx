@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { ArrowLeft, MapPin, Filter } from "lucide-react";
 import LocationPicker from "@/components/LocationPicker";
 import TempleCard from "@/components/TempleCard";
@@ -69,31 +69,54 @@ export default function ServicePage() {
         return icons[type] || "🏛️";
     };
 
+    // Load temple data from database
+    const loadTempleData = useCallback(
+        async (serviceType: string) => {
+            setInitialLoading(true);
+            try {
+                const servicesWithTemples = await getServicesByType(
+                    serviceType
+                );
+                const templeData = await transformToTempleData(
+                    servicesWithTemples,
+                    selectedLocation?.latitude,
+                    selectedLocation?.longitude
+                );
+                setTemples(templeData);
+            } catch (error) {
+                console.error("Error loading temple data:", error);
+                setTemples([]);
+            } finally {
+                setInitialLoading(false);
+            }
+        },
+        [selectedLocation]
+    );
+
     // Load initial data when component mounts
     useEffect(() => {
         if (typeof service === "string" && SERVICES.includes(service)) {
             loadTempleData(service);
         }
-    }, [service]);
+    }, [service, loadTempleData]);
 
-    // Load temple data from database
-    const loadTempleData = async (serviceType: string) => {
-        setInitialLoading(true);
-        try {
-            const servicesWithTemples = await getServicesByType(serviceType);
-            const templeData = await transformToTempleData(
-                servicesWithTemples,
-                selectedLocation?.latitude,
-                selectedLocation?.longitude
-            );
-            setTemples(templeData);
-        } catch (error) {
-            console.error("Error loading temple data:", error);
-            setTemples([]);
-        } finally {
-            setInitialLoading(false);
-        }
-    };
+    // Calculate distance between two coordinates
+    const calculateDistance = useCallback(
+        (lat1: number, lon1: number, lat2: number, lon2: number) => {
+            const R = 6371; // Earth's radius in kilometers
+            const dLat = ((lat2 - lat1) * Math.PI) / 180;
+            const dLon = ((lon2 - lon1) * Math.PI) / 180;
+            const a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos((lat1 * Math.PI) / 180) *
+                    Math.cos((lat2 * Math.PI) / 180) *
+                    Math.sin(dLon / 2) *
+                    Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        },
+        []
+    );
 
     // Update temple distances when location changes
     useEffect(() => {
@@ -122,27 +145,8 @@ export default function ServicePage() {
                 setLoading(false);
             }, 1000);
         }
-    }, [selectedLocation]);
-
-    // Calculate distance between two coordinates
-    const calculateDistance = (
-        lat1: number,
-        lon1: number,
-        lat2: number,
-        lon2: number
-    ) => {
-        const R = 6371; // Earth's radius in kilometers
-        const dLat = ((lat2 - lat1) * Math.PI) / 180;
-        const dLon = ((lon2 - lon1) * Math.PI) / 180;
-        const a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos((lat1 * Math.PI) / 180) *
-                Math.cos((lat2 * Math.PI) / 180) *
-                Math.sin(dLon / 2) *
-                Math.sin(dLon / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
-    };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedLocation, service, calculateDistance]);
 
     const handleLocationSelected = (location: LocationData) => {
         setSelectedLocation(location);

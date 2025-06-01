@@ -7,11 +7,25 @@ const dbUrl = new URL(process.env.DATABASE_URL as string);
 
 const db = createPool({
     host: dbUrl.hostname,
-    port: dbUrl.port,
+    port: parseInt(dbUrl.port),
     user: dbUrl.username,
     password: dbUrl.password,
     database: dbUrl.pathname.slice(1),
 });
+
+interface BookingRow {
+    id: number;
+    date: Date;
+    status: string;
+    responses: Record<string, unknown>;
+    createdAt: Date;
+    confirmedAt?: Date;
+    completedAt?: Date;
+    cancelledAt?: Date;
+    serviceType: string;
+    templeName: string;
+    templeSlug: string;
+}
 
 export async function GET(request: NextRequest) {
     try {
@@ -50,7 +64,7 @@ export async function GET(request: NextRequest) {
         );
 
         // Transform the data for frontend
-        const bookings = (rows as any[]).map((row) => ({
+        const bookings = (rows as BookingRow[]).map((row) => ({
             id: row.id.toString(),
             templeName: row.templeName,
             templeSlug: row.templeSlug,
