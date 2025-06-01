@@ -1,27 +1,90 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sarabun: "Sarabun", serif;
+    --font-sarabun: "Sarabun", serif;
 
-  --color-yellow-light: #fefaed;
-  --color-yellow--light-hover: #fef8e4;
-  --color-yellow-light-active: #fdf0c8;
-  --color-yellow-normal: #f9d04d;
-  --color-yellow-normal-hover: #e0bb45;
-  --color-yellow-normal-active: #c7a63e;
-  --color-yellow-dark: #bb9c3a;
-  --color-yellow-dark-hover: #957d2e;
-  --color-yellow-dark-active: #705e23;
-  --color-yellow-darker: #57491b;
+    --color-yellow-light: #fefaed;
+    --color-yellow--light-hover: #fef8e4;
+    --color-yellow-light-active: #fdf0c8;
+    --color-yellow-normal: #f9d04d;
+    --color-yellow-normal-hover: #e0bb45;
+    --color-yellow-normal-active: #c7a63e;
+    --color-yellow-dark: #bb9c3a;
+    --color-yellow-dark-hover: #957d2e;
+    --color-yellow-dark-active: #705e23;
+    --color-yellow-darker: #57491b;
 
-  --color-brown-light: #eeebea;
-  --color-brown-light-hover: #e5e1df;
-  --color-brown-light-active: #cac2bc;
-  --color-brown-normal: #533928;
-  --color-brown-normal-hover: #4b3324;
-  --color-brown-normal-active: #422e20;
-  --color-brown-dark: #3e2b1e;
-  --color-brown-dark-hover: #322218;
-  --color-brown-dark-active: #251a12;
-  --color-brown-darker: #1d140e;
+    --color-brown-light: #eeebea;
+    --color-brown-light-hover: #e5e1df;
+    --color-brown-light-active: #cac2bc;
+    --color-brown-normal: #533928;
+    --color-brown-normal-hover: #4b3324;
+    --color-brown-normal-active: #422e20;
+    --color-brown-dark: #3e2b1e;
+    --color-brown-dark-hover: #322218;
+    --color-brown-dark-active: #251a12;
+    --color-brown-darker: #1d140e;
+}
+
+/* Line clamp utilities */
+.line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+
+/* Custom scrollbar for webkit browsers */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Custom marker styles for Leaflet */
+.custom-marker {
+    background: none !important;
+    border: none !important;
+}
+
+/* Animation for loading states */
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Smooth transitions for hover effects */
+.transition-smooth {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
