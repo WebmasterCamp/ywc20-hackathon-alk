@@ -63,6 +63,8 @@ interface LeafletMap {
     setView: (latlng: [number, number], zoom: number) => LeafletMap;
     on: (event: string, handler: (e: LeafletEvent) => void) => void;
     remove: () => void;
+    removeLayer: (layer: LeafletMarker) => void;
+    addLayer: (layer: LeafletMarker) => void;
 }
 
 interface LeafletTileLayer {
@@ -82,6 +84,11 @@ interface LeafletMarker {
     on: (event: string, handler: (e: LeafletDragEvent) => void) => void;
     setLatLng: (latlng: [number, number]) => LeafletMarker;
     getLatLng: () => { lat: number; lng: number };
+    bindPopup: (
+        content: string,
+        options?: { maxWidth?: number; className?: string }
+    ) => LeafletMarker;
+    openPopup: () => LeafletMarker;
 }
 
 interface LeafletEvent {
@@ -111,20 +118,42 @@ interface LocationData {
     shortAddress: string;
 }
 
+interface TempleData {
+    id: string;
+    name: string;
+    address: string;
+    distance: number;
+    rating: number;
+    reviewCount: number;
+    phone?: string;
+    openTime: string;
+    services: string[];
+    image?: string;
+    latitude: number;
+    longitude: number;
+}
+
 interface LocationPickerProps {
     onLocationSelected?: (location: LocationData) => void;
     placeholder?: string;
     className?: string;
+    temples?: TempleData[];
+    showTemples?: boolean;
+    onTempleSelected?: (temple: TempleData) => void;
 }
 
 const LocationPicker = ({
     onLocationSelected,
     placeholder = "เลือกที่อยู่สำหรับค้นหาวัด",
     className = "",
+    temples = [],
+    showTemples = true,
+    onTempleSelected,
 }: LocationPickerProps) => {
     const mapRef = useRef<HTMLDivElement>(null);
     const mapInstanceRef = useRef<LeafletMap | null>(null);
     const markerRef = useRef<LeafletMarker | null>(null);
+    const templeMarkersRef = useRef<LeafletMarker[]>([]);
     const searchInputRef = useRef<HTMLInputElement>(null);
 
     const [isMapOpen, setIsMapOpen] = useState(false);
@@ -139,10 +168,204 @@ const LocationPicker = ({
     const [loading, setLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+    const [showTemplesOnMap, setShowTemplesOnMap] = useState(showTemples);
 
     const updateTempLocation = useCallback((lat: number, lng: number) => {
         setTempLocation({ latitude: lat, longitude: lng });
     }, []);
+
+    // Add temple markers to map
+    const addTempleMarkers = useCallback(() => {
+        if (
+            !mapInstanceRef.current ||
+            !showTemplesOnMap ||
+            temples.length === 0
+        )
+            return;
+
+        // Clear existing temple markers
+        templeMarkersRef.current.forEach((marker) => {
+            mapInstanceRef.current?.removeLayer?.(marker);
+        });
+        templeMarkersRef.current = [];
+
+        // Create temple markers
+        temples.forEach((temple) => {
+            const templeIcon = window.L.divIcon({
+                html: `<div style="background: #16a34a; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3); position: relative; display: flex; align-items: center; justify-content: center;">
+                    <div style="color: white; font-size: 10px; font-weight: bold;">🏛️</div>
+                </div>`,
+                className: "temple-marker",
+                iconSize: [20, 20],
+                iconAnchor: [10, 10],
+            });
+
+            const templeMarker = window.L.marker(
+                [temple.latitude, temple.longitude],
+                {
+                    icon: templeIcon,
+                }
+            ).addTo(mapInstanceRef.current!);
+
+            // Add click handler for temple marker
+            templeMarker.on("click", () => {
+                // Show detailed popup
+                const popupContent = `
+                    <div style="font-family: system-ui; min-width: 280px; max-width: 320px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                            <h3 style="margin: 0; font-size: 16px; font-weight: bold; color: #1f2937; line-height: 1.3;">${
+                                temple.name
+                            }</h3>
+                        </div>
+                        
+                        <div style="margin-bottom: 12px;">
+                            <p style="margin: 0 0 8px 0; font-size: 13px; color: #6b7280; line-height: 1.4;">${
+                                temple.address
+                            }</p>
+                        </div>
+
+                        <div style="display: flex; flex-wrap: gap: 12px; margin-bottom: 12px; font-size: 13px;">
+                            <div style="display: flex; align-items: center; gap: 4px;">
+                                <span>⭐</span>
+                                <span style="font-weight: 500;">${temple.rating.toFixed(
+                                    1
+                                )}</span>
+                                <span style="color: #6b7280;">(${
+                                    temple.reviewCount
+                                } รีวิว)</span>
+                            </div>
+                            ${
+                                temple.distance > 0
+                                    ? `
+                                <div style="display: flex; align-items: center; gap: 4px; color: #6b7280;">
+                                    <span>📍</span>
+                                    <span>${temple.distance.toFixed(
+                                        1
+                                    )} กม.</span>
+                                </div>
+                            `
+                                    : ""
+                            }
+                        </div>
+
+                        ${
+                            temple.openTime
+                                ? `
+                            <div style="margin-bottom: 12px; font-size: 13px; color: #6b7280;">
+                                <span>🕐</span> เปิด ${temple.openTime}
+                            </div>
+                        `
+                                : ""
+                        }
+
+                        ${
+                            temple.phone
+                                ? `
+                            <div style="margin-bottom: 12px; font-size: 13px; color: #6b7280;">
+                                <span>📞</span> ${temple.phone}
+                            </div>
+                        `
+                                : ""
+                        }
+
+                        ${
+                            temple.services && temple.services.length > 0
+                                ? `
+                            <div style="margin-bottom: 16px;">
+                                <div style="font-size: 12px; color: #6b7280; margin-bottom: 6px;">บริการ:</div>
+                                <div style="display: flex; flex-wrap: gap: 4px;">
+                                    ${temple.services
+                                        .slice(0, 3)
+                                        .map(
+                                            (service) =>
+                                                `<span style="background: #f3f4f6; color: #374151; padding: 2px 6px; border-radius: 4px; font-size: 11px;">${service}</span>`
+                                        )
+                                        .join("")}
+                                    ${
+                                        temple.services.length > 3
+                                            ? `<span style="background: #f3f4f6; color: #374151; padding: 2px 6px; border-radius: 4px; font-size: 11px;">+${
+                                                  temple.services.length - 3
+                                              } อื่นๆ</span>`
+                                            : ""
+                                    }
+                                </div>
+                            </div>
+                        `
+                                : ""
+                        }
+
+                        <div style="display: flex; gap: 8px;">
+                            <button 
+                                onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${
+                                    temple.latitude
+                                },${temple.longitude}', '_blank')"
+                                style="flex: 1; background: #f3f4f6; color: #374151; border: none; padding: 8px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;"
+                                onmouseover="this.style.background='#e5e7eb'"
+                                onmouseout="this.style.background='#f3f4f6'"
+                            >
+                                <span>🗺️</span>
+                                <span>นำทาง</span>
+                            </button>
+                        </div>
+
+                        <div style="margin-top: 8px;">
+                            <button 
+                                onclick="document.dispatchEvent(new CustomEvent('templeSelected', {detail: '${
+                                    temple.id
+                                }'}))"
+                                style="width: 100%; background: #eab308; color: white; border: none; padding: 10px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer;"
+                                onmouseover="this.style.background='#ca8a04'"
+                                onmouseout="this.style.background='#eab308'"
+                            >
+                                ดูรายละเอียดและจองบริการ
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                templeMarker
+                    .bindPopup(popupContent, {
+                        maxWidth: 320,
+                        className: "temple-popup",
+                    })
+                    .openPopup();
+            });
+
+            templeMarkersRef.current.push(templeMarker);
+        });
+    }, [temples, showTemplesOnMap]);
+
+    // Remove temple markers
+    const removeTempleMarkers = useCallback(() => {
+        templeMarkersRef.current.forEach((marker) => {
+            if (mapInstanceRef.current) {
+                mapInstanceRef.current.removeLayer?.(marker);
+            }
+        });
+        templeMarkersRef.current = [];
+    }, []);
+
+    // Listen for temple selection events
+    useEffect(() => {
+        const handleTempleSelected = (event: CustomEvent) => {
+            const templeId = event.detail;
+            const selectedTemple = temples.find((t) => t.id === templeId);
+            if (selectedTemple && onTempleSelected) {
+                onTempleSelected(selectedTemple);
+            }
+        };
+
+        document.addEventListener(
+            "templeSelected",
+            handleTempleSelected as EventListener
+        );
+        return () => {
+            document.removeEventListener(
+                "templeSelected",
+                handleTempleSelected as EventListener
+            );
+        };
+    }, [temples, onTempleSelected]);
 
     // Reverse geocode using Nominatim
     const reverseGeocode = useCallback(async (lat: number, lng: number) => {
@@ -272,6 +495,23 @@ const LocationPicker = ({
         tempLocation.longitude,
         updateTempLocation,
         reverseGeocode,
+    ]);
+
+    // Manage temple markers when map loads or data changes
+    useEffect(() => {
+        if (mapLoaded && mapInstanceRef.current) {
+            if (showTemplesOnMap && temples.length > 0) {
+                addTempleMarkers();
+            } else {
+                removeTempleMarkers();
+            }
+        }
+    }, [
+        mapLoaded,
+        temples,
+        showTemplesOnMap,
+        addTempleMarkers,
+        removeTempleMarkers,
     ]);
 
     // Search for places
@@ -531,6 +771,29 @@ const LocationPicker = ({
                                 className="absolute top-4 right-4 bg-white hover:bg-gray-50 p-3 rounded-full shadow-lg border border-gray-200 transition-colors"
                             >
                                 <Crosshair className="w-5 h-5 text-gray-600" />
+                            </button>
+                        )}
+
+                        {/* Toggle Temples Button */}
+                        {mapLoaded && temples.length > 0 && (
+                            <button
+                                onClick={() =>
+                                    setShowTemplesOnMap(!showTemplesOnMap)
+                                }
+                                className={`absolute top-16 right-4 p-3 rounded-full shadow-lg border border-gray-200 transition-colors ${
+                                    showTemplesOnMap
+                                        ? "bg-green-500 hover:bg-green-600 text-white"
+                                        : "bg-white hover:bg-gray-50 text-gray-600"
+                                }`}
+                                title={
+                                    showTemplesOnMap
+                                        ? "ซ่อนวัดบนแผนที่"
+                                        : "แสดงวัดบนแผนที่"
+                                }
+                            >
+                                <div className="w-5 h-5 flex items-center justify-center text-sm">
+                                    🏛️
+                                </div>
                             </button>
                         )}
                     </div>

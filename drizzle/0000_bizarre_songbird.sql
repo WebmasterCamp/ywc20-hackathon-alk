@@ -66,6 +66,9 @@ CREATE TABLE `temple` (
 	`name` text NOT NULL,
 	`thumbnails` json NOT NULL,
 	`information` text NOT NULL,
+	`address` text NOT NULL,
+	`latitude` float NOT NULL,
+	`longitude` float NOT NULL,
 	`createdAt` datetime NOT NULL,
 	`updatedAt` datetime NOT NULL,
 	CONSTRAINT `temple_slug` PRIMARY KEY(`slug`)

@@ -2,68 +2,17 @@
 
 import { useParams } from "next/navigation";
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, MapPin, Filter, Search } from "lucide-react";
+import { ArrowLeft, MapPin, Filter } from "lucide-react";
 import LocationPicker from "@/components/LocationPicker";
 import TempleCard from "@/components/TempleCard";
 import { useRouter } from "next/navigation";
+import {
+    getServicesByType,
+    transformToTempleData,
+    TempleData,
+} from "@/actions/service";
 
 const SERVICES = ["car", "home", "birth", "company", "wedding"];
-
-// Mock temple data - ในอนาคตจะเอามาจาก API
-const mockTemples = [
-    {
-        id: "1",
-        name: "วัดพระแก้ว",
-        address: "2 ถนนหน้าพระลาน พระบรมมหาราชวัง กรุงเทพมหานคร 10200",
-        distance: 0.8,
-        rating: 4.8,
-        reviewCount: 1234,
-        phone: "02-623-5500",
-        openTime: "08:30 - 15:30",
-        services: ["พิธีแต่งงาน", "พิธีขึ้นชื่อ", "ทำบุญขึ้นบ้านใหม่"],
-        latitude: 13.7515,
-        longitude: 100.4925,
-    },
-    {
-        id: "2",
-        name: "วัดโพธิ์",
-        address: "2 ถนนเศรษฐี เขตพระนคร กรุงเทพมหานคร 10200",
-        distance: 1.2,
-        rating: 4.6,
-        reviewCount: 876,
-        phone: "02-226-0335",
-        openTime: "08:00 - 17:00",
-        services: ["บริการเจิมรถ", "เปิดบริษัท/ร้านค้า", "พิธีแต่งงาน"],
-        latitude: 13.7465,
-        longitude: 100.4925,
-    },
-    {
-        id: "3",
-        name: "วัดอรุณราชวรารามราชวรมหาวิหาร",
-        address: "158 ถนนวังโดม เขตบางกอกใหญ่ กรุงเทพมหานคร 10600",
-        distance: 2.1,
-        rating: 4.7,
-        reviewCount: 2145,
-        phone: "02-891-2185",
-        openTime: "06:00 - 18:00",
-        services: ["พิธีขึ้นชื่อ", "ทำบุญขึ้นบ้านใหม่", "บริการเจิมรถ"],
-        latitude: 13.7436,
-        longitude: 100.4881,
-    },
-    {
-        id: "4",
-        name: "วัดราชนัดดาราม",
-        address: "434 ถนนฟิวเจอร์พาร์ค รังสิต เขตธัญบุรี ปทุมธานี 12110",
-        distance: 3.5,
-        rating: 4.5,
-        reviewCount: 543,
-        phone: "02-516-8444",
-        openTime: "06:00 - 18:00",
-        services: ["เปิดบริษัท/ร้านค้า", "บริการเจิมรถ"],
-        latitude: 13.9957,
-        longitude: 100.6196,
-    },
-];
 
 interface LocationData {
     latitude: number;
@@ -93,8 +42,9 @@ export default function ServicePage() {
 
     const [selectedLocation, setSelectedLocation] =
         useState<LocationData | null>(null);
-    const [temples, setTemples] = useState(mockTemples);
+    const [temples, setTemples] = useState<TempleData[]>([]);
     const [loading, setLoading] = useState(false);
+    const [initialLoading, setInitialLoading] = useState(true);
     const [sortBy, setSortBy] = useState<"distance" | "rating">("distance");
 
     const getServiceName = (type: string) => {
@@ -119,6 +69,61 @@ export default function ServicePage() {
         return icons[type] || "🏛️";
     };
 
+    // Load initial data when component mounts
+    useEffect(() => {
+        if (typeof service === "string" && SERVICES.includes(service)) {
+            loadTempleData(service);
+        }
+    }, [service]);
+
+    // Load temple data from database
+    const loadTempleData = async (serviceType: string) => {
+        setInitialLoading(true);
+        try {
+            const servicesWithTemples = await getServicesByType(serviceType);
+            const templeData = await transformToTempleData(
+                servicesWithTemples,
+                selectedLocation?.latitude,
+                selectedLocation?.longitude
+            );
+            setTemples(templeData);
+        } catch (error) {
+            console.error("Error loading temple data:", error);
+            setTemples([]);
+        } finally {
+            setInitialLoading(false);
+        }
+    };
+
+    // Update temple distances when location changes
+    useEffect(() => {
+        if (
+            selectedLocation &&
+            temples.length > 0 &&
+            typeof service === "string"
+        ) {
+            setLoading(true);
+
+            // Recalculate distances for existing temples
+            const updatedTemples = temples.map((temple) => ({
+                ...temple,
+                distance: calculateDistance(
+                    selectedLocation.latitude,
+                    selectedLocation.longitude,
+                    temple.latitude,
+                    temple.longitude
+                ),
+            }));
+
+            setTemples(updatedTemples);
+
+            // Simulate API delay
+            setTimeout(() => {
+                setLoading(false);
+            }, 1000);
+        }
+    }, [selectedLocation]);
+
     // Calculate distance between two coordinates
     const calculateDistance = (
         lat1: number,
@@ -139,48 +144,13 @@ export default function ServicePage() {
         return R * c;
     };
 
-    // Update temple distances when location changes
-    useEffect(() => {
-        if (selectedLocation) {
-            setLoading(true);
-
-            // Calculate distances and update temples
-            const updatedTemples = mockTemples.map((temple) => ({
-                ...temple,
-                distance: calculateDistance(
-                    selectedLocation.latitude,
-                    selectedLocation.longitude,
-                    temple.latitude,
-                    temple.longitude
-                ),
-            }));
-
-            // Sort temples
-            const sortedTemples = [...updatedTemples].sort((a, b) => {
-                if (sortBy === "distance") {
-                    return a.distance - b.distance;
-                } else {
-                    return b.rating - a.rating;
-                }
-            });
-
-            setTemples(sortedTemples);
-
-            // Simulate API delay
-            setTimeout(() => {
-                setLoading(false);
-            }, 1000);
-        }
-    }, [selectedLocation, sortBy]);
-
     const handleLocationSelected = (location: LocationData) => {
         setSelectedLocation(location);
     };
 
     const handleTempleSelect = (temple: Temple) => {
-        // Navigate to temple detail or booking page
-        console.log("Selected temple:", temple);
-        // router.push(`/booking/${temple.id}?service=${service}`);
+        // Navigate to temple detail page
+        router.push(`/${service}/${temple.id}`);
     };
 
     const sortedTemples = [...temples].sort((a, b) => {
@@ -257,6 +227,9 @@ export default function ServicePage() {
                                 placeholder={`เลือกที่อยู่เพื่อค้นหา${getServiceName(
                                     service
                                 )}`}
+                                temples={temples}
+                                showTemples={true}
+                                onTempleSelected={handleTempleSelect}
                             />
 
                             {selectedLocation && (
@@ -317,6 +290,34 @@ export default function ServicePage() {
                             </div>
                         </div>
 
+                        {/* Stats Card */}
+                        {!initialLoading && temples.length > 0 && (
+                            <div className="bg-white p-4 lg:p-6 rounded-xl shadow-sm border border-gray-200">
+                                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                                    สถิติ
+                                </h3>
+                                <div className="space-y-2 text-sm text-gray-600">
+                                    <div className="flex justify-between">
+                                        <span>จำนวนวัด:</span>
+                                        <span className="font-medium">
+                                            {temples.length} วัด
+                                        </span>
+                                    </div>
+                                    {selectedLocation && (
+                                        <div className="flex justify-between">
+                                            <span>วัดใกล้ที่สุด:</span>
+                                            <span className="font-medium">
+                                                {sortedTemples[0]?.distance.toFixed(
+                                                    1
+                                                )}{" "}
+                                                กม.
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
                         {/* Mobile Instructions */}
                         <div className="lg:hidden bg-blue-50 p-4 rounded-xl border border-blue-200">
                             <p className="text-sm text-blue-700">
@@ -327,13 +328,38 @@ export default function ServicePage() {
 
                     {/* Right Content - Temple List */}
                     <div className="lg:col-span-3">
-                        {selectedLocation ? (
+                        {initialLoading ? (
+                            /* Initial Loading */
+                            <div className="space-y-4">
+                                <div className="animate-pulse">
+                                    <div className="h-6 bg-gray-200 rounded w-1/3 mb-2"></div>
+                                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                                </div>
+                                {[1, 2, 3, 4].map((i) => (
+                                    <div
+                                        key={i}
+                                        className="bg-white p-6 rounded-xl border border-gray-200 animate-pulse"
+                                    >
+                                        <div className="flex gap-4">
+                                            <div className="w-24 h-24 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                                            <div className="flex-1 space-y-3">
+                                                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                                                <div className="h-3 bg-gray-200 rounded w-full"></div>
+                                                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : temples.length > 0 ? (
                             <>
                                 {/* Results Header */}
                                 <div className="mb-6">
                                     <div className="flex items-center justify-between">
                                         <h2 className="text-xl font-semibold text-gray-800">
-                                            วัดใกล้คุณ
+                                            {selectedLocation
+                                                ? "วัดใกล้คุณ"
+                                                : "วัดทั้งหมด"}
                                         </h2>
                                         <div className="text-sm text-gray-600">
                                             {temples.length} วัด
@@ -341,7 +367,8 @@ export default function ServicePage() {
                                     </div>
                                     <p className="text-gray-600 mt-1">
                                         วัดที่ให้บริการ{getServiceName(service)}
-                                        ใกล้ {selectedLocation.shortAddress}
+                                        {selectedLocation &&
+                                            ` ใกล้ ${selectedLocation.shortAddress}`}
                                     </p>
                                 </div>
 
@@ -376,24 +403,9 @@ export default function ServicePage() {
                                         ))}
                                     </div>
                                 )}
-
-                                {/* No Results */}
-                                {!loading && sortedTemples.length === 0 && (
-                                    <div className="text-center py-12">
-                                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                            <Search className="w-8 h-8 text-gray-400" />
-                                        </div>
-                                        <h3 className="text-lg font-medium text-gray-800 mb-2">
-                                            ไม่พบวัดในบริเวณนี้
-                                        </h3>
-                                        <p className="text-gray-600">
-                                            ลองเปลี่ยนตำแหน่งหรือขยายพื้นที่การค้นหา
-                                        </p>
-                                    </div>
-                                )}
                             </>
                         ) : (
-                            /* Empty State */
+                            /* No Results */
                             <div className="text-center py-16">
                                 <div className="w-24 h-24 bg-yellow-light rounded-full flex items-center justify-center mx-auto mb-6">
                                     <span className="text-4xl">
@@ -401,18 +413,21 @@ export default function ServicePage() {
                                     </span>
                                 </div>
                                 <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                                    ค้นหา{getServiceName(service)}
+                                    ไม่พบวัดที่ให้บริการ
+                                    {getServiceName(service)}
                                 </h2>
                                 <p className="text-gray-600 mb-8 max-w-md mx-auto">
-                                    เลือกที่อยู่ของคุณเพื่อค้นหาวัดที่ให้บริการ
-                                    {getServiceName(service)}ใกล้คุณ
+                                    ขณะนี้ยังไม่มีวัดในระบบที่ให้บริการ
+                                    {getServiceName(service)}
+                                    กรุณาลองเลือกบริการอื่น
+                                    หรือติดต่อเราเพื่อเพิ่มวัดใหม่
                                 </p>
-                                <div className="inline-flex items-center gap-2 text-yellow-normal">
-                                    <MapPin className="w-5 h-5" />
-                                    <span className="font-medium">
-                                        เลือกที่อยู่ด้านซ้าย
-                                    </span>
-                                </div>
+                                <button
+                                    onClick={() => router.push("/")}
+                                    className="bg-yellow-normal hover:bg-yellow-normal-hover text-white font-medium py-2 px-6 rounded-lg transition-colors"
+                                >
+                                    กลับไปหน้าหลัก
+                                </button>
                             </div>
                         )}
                     </div>

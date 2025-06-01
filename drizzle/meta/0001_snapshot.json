@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "c8fd6f24-33a4-4dcd-aac7-6f272f056c90",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "b46435da-5e97-494f-be3a-0baa7e579cae",
+  "prevId": "c8fd6f24-33a4-4dcd-aac7-6f272f056c90",
   "tables": {
     "account": {
       "name": "account",
@@ -471,6 +471,45 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "phone": {
+          "name": "phone",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "rating": {
+          "name": "rating",
+          "type": "float",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "reviewCount": {
+          "name": "reviewCount",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "openTime": {
+          "name": "openTime",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'06:00'"
+        },
+        "closeTime": {
+          "name": "closeTime",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'18:00'"
         },
         "createdAt": {
           "name": "createdAt",

@@ -7,6 +7,7 @@ import {
     boolean,
     unique,
     json,
+    float,
 } from "drizzle-orm/mysql-core";
 import { sql } from "drizzle-orm";
 
@@ -90,6 +91,14 @@ export const temple = mysqlTable("temple", {
     name: text("name").notNull(),
     thumbnails: json("thumbnails").$type<string[]>().notNull(),
     information: text("information").notNull(),
+    address: text("address").notNull(),
+    latitude: float("latitude").notNull(),
+    longitude: float("longitude").notNull(),
+    phone: varchar("phone", { length: 20 }),
+    rating: float("rating").default(0).notNull(),
+    reviewCount: int("reviewCount").default(0).notNull(),
+    openTime: varchar("openTime", { length: 10 }).default("06:00").notNull(),
+    closeTime: varchar("closeTime", { length: 10 }).default("18:00").notNull(),
     createdAt: datetime("createdAt").notNull(),
     updatedAt: datetime("updatedAt").notNull(),
 });
@@ -139,6 +148,7 @@ export const order = mysqlTable("order", {
         .$type<"pending" | "confirmed" | "completed" | "cancelled">()
         .notNull()
         .default("pending"),
+    date: datetime("date").notNull(),
     confirmedAt: datetime("confirmedAt"),
     completedAt: datetime("completedAt"),
     cancelledAt: datetime("cancelledAt"),
