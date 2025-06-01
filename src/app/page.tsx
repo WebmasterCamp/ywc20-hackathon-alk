@@ -1,7 +1,6 @@
 "use client";
 
 import { testServerAction } from "@/actions/test";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { collection } from "@/db/schema";
 import { InferModel } from "drizzle-orm";
@@ -9,7 +8,7 @@ import { InferModel } from "drizzle-orm";
 type Collection = InferModel<typeof collection>;
 
 export default function Home() {
-    const [collections, setCollections] = useState<Collection[]>([]);
+    const [, setCollections] = useState<Collection[]>([]);
 
     useEffect(() => {
         const fetchCollections = async () => {
