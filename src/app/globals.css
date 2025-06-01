@@ -1,26 +1,27 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --font-sarabun: "Sarabun", serif;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-yellow-light: #fefaed;
+  --color-yellow--light-hover: #fef8e4;
+  --color-yellow-light-active: #fdf0c8;
+  --color-yellow-normal: #f9d04d;
+  --color-yellow-normal-hover: #e0bb45;
+  --color-yellow-normal-active: #c7a63e;
+  --color-yellow-dark: #bb9c3a;
+  --color-yellow-dark-hover: #957d2e;
+  --color-yellow-dark-active: #705e23;
+  --color-yellow-darker: #57491b;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  --color-brown-light: #eeebea;
+  --color-brown-light-hover: #e5e1df;
+  --color-brown-light-active: #cac2bc;
+  --color-brown-normal: #533928;
+  --color-brown-normal-hover: #4b3324;
+  --color-brown-normal-active: #422e20;
+  --color-brown-dark: #3e2b1e;
+  --color-brown-dark-hover: #322218;
+  --color-brown-dark-active: #251a12;
+  --color-brown-darker: #1d140e;
 }
