@@ -45,7 +45,7 @@ export const auth = betterAuth({
     // Hardcode base URL for production
     baseURL:
         process.env.NODE_ENV === "production"
-            ? "https://www.ประสานบุญ.ไทย"
+            ? "https://prasanboon.in.th"
             : process.env.BETTER_AUTH_URL,
     socialProviders: {
         google: {
