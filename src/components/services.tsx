@@ -1,5 +1,4 @@
 import React from "react";
-import ServiceCard from "@/components/service-card";
 import Link from "next/link";
 
 export interface Service {
