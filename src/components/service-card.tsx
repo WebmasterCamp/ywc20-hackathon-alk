@@ -1,5 +1,5 @@
-import { Service } from '@/app/page'
 import React from 'react'
+import { Service } from './services';
 
 interface Prop {
   service: Service;

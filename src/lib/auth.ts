@@ -37,9 +37,18 @@ export const auth = betterAuth({
         google: {
             clientId:
                 process.env.NODE_ENV === "production"
-                    ? Buffer.from("", "base64").toString("utf-8")
+                    ? Buffer.from(
+                          "NTg2MTMyODk4NjYwLTRkbmlua2N2amc4YWsyMzlpNzI0a3UydWkwdTRlbXA5LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29t",
+                          "base64"
+                      ).toString("utf-8")
                     : (process.env.GOOGLE_CLIENT_ID_DEV as string),
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+            clientSecret:
+                process.env.NODE_ENV === "production"
+                    ? Buffer.from(
+                          "R09DU1BYLVJ4RWdSaUFqRS0tcTZSZEtWZWN6bjVuS095S3U=",
+                          "base64"
+                      ).toString("utf-8")
+                    : (process.env.GOOGLE_CLIENT_SECRET_DEV as string),
         },
     },
     plugins: [nextCookies()],
