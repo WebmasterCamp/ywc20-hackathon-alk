@@ -54,7 +54,7 @@ export default function Footer() {
         //     </div>
         // </footer>
         <footer className="bg-brown-dark text-white flex justify-center items-center py-16">
-            <div className="w-[1200px] flex justify-between items-center">
+            <div className="w-[1200px] flex lg:flex-row flex-col justify-between items-center">
                 <div>
                     <img
                         className="mb-6 h-[50px]"
@@ -93,8 +93,8 @@ export default function Footer() {
                         </Link>
                     </div>
                 </div>
-                <div className="flex gap-4 items-center">
-                    <div className="w-[200px]">
+                <div className="flex lg:flex-row flex-col gap-4 items-center my-8">
+                    <div className="lg:w-[200px] w-full">
                         <h1 className="text-2xl font-bold mb-6">Company</h1>
                         <div className="flex flex-col space-y-3">
                             <Link href="/">About us</Link>
@@ -102,7 +102,7 @@ export default function Footer() {
                             <Link href="/">Contact us</Link>
                         </div>
                     </div>
-                    <div className="w-[200px]">
+                    <div className="lg:w-[200px] w-full">
                         <h1 className="text-2xl font-bold mb-6">Support</h1>
                         <div className="flex flex-col space-y-3">
                             <Link href="/">Help center</Link>
@@ -110,7 +110,7 @@ export default function Footer() {
                             <Link href="/">Legal</Link>
                         </div>
                     </div>
-                    <div className="w-[300px]">
+                    <div className="lg:w-[300px] w-full mt-5">
                         <h1 className="text-2xl font-bold mb-6">
                             Stay up to date
                         </h1>
