@@ -135,6 +135,18 @@ export default function Navbar() {
                             <div className="p-3">
                                 <ActiveLink href="/birth">ทำบุญวันเกิด</ActiveLink>  
                             </div> 
+                            <div className="p-3 flex items-center">
+                                <ActiveLink href="/user">โปรไฟล์</ActiveLink>  
+                                <img
+                                    className="ml-5 h-[42px] w-[42px] bg-black/10 aspect-[1/1] object-cover rounded-full"
+                                    src={
+                                        session?.user.image
+                                            ? session.user.image
+                                            : "/images/AvatarPlaceHolder.png"
+                                    }
+                                    alt={session?.user.name}
+                                />
+                            </div> 
                         </div>
                     </div>
                 </div>
