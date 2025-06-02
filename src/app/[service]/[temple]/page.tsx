@@ -37,6 +37,69 @@ function getServiceNameThai(serviceType: string): string {
     return serviceNames[serviceType] || serviceType;
 }
 
+// Service details and pricing information
+function getServiceDetails(serviceType: string) {
+    const serviceDetails: {
+        [key: string]: {
+            emoji: string;
+            fullName: string;
+            monks: string;
+            location: string;
+            includes: string;
+            price: string;
+            note: string;
+        };
+    } = {
+        car: {
+            emoji: "🔖",
+            fullName: "เจิมรถ / เขียนยันต์มงคล",
+            monks: "1 รูป",
+            location: "บ้านลูกค้า / จุดนัดหมาย",
+            includes: "การเจิมรถ / ลงยันต์ / ให้พร",
+            price: "599 บาท",
+            note: "ไม่รวมค่าเดินทางหากอยู่นอกพื้นที่บริการ หรือจองนอกเวลามงคล",
+        },
+        home: {
+            emoji: "🏠",
+            fullName: "ทำบุญขึ้นบ้านใหม่",
+            monks: "5 รูป (สามารถอัปเกรดเป็น 9 รูปได้)",
+            location: "บ้านของลูกค้า",
+            includes: "ทำพิธีสวดมนต์, ประพรมน้ำ, เจิมประตูบ้าน",
+            price: "5,500 บาท",
+            note: "ไม่รวมภัตตาหาร หากต้องการเพิ่มสามารถเลือกแพ็กเกจเสริม",
+        },
+        wedding: {
+            emoji: "💍",
+            fullName: "พิธีสงฆ์ในงานแต่งงาน",
+            monks: "9 รูป",
+            location: "สถานที่จัดงานแต่ง",
+            includes: "สวดมนต์, เจิมคู่บ่าวสาว, ประพรมน้ำมนต์",
+            price: "8,900 บาท",
+            note: "มีทีมประสานก่อนวันงาน / สามารถเลือกวัดหรือพระได้ในระบบ",
+        },
+        company: {
+            emoji: "🏢",
+            fullName: "ทำบุญบริษัท / เปิดกิจการใหม่",
+            monks: "9 รูป",
+            location: "สำนักงาน / บริษัทของลูกค้า",
+            includes: "สวดมนต์, เจิม, ประพรมน้ำ, เตรียมอาสนะ / พรม",
+            price: "10,900 บาท",
+            note: "เหมาะกับงานเปิดสำนักงาน, ครบรอบกิจการ, ทำบุญประจำปี",
+        },
+        birth: {
+            emoji: "🎂",
+            fullName: "งานทำบุญวันเกิด / ส่วนตัว",
+            monks: "1–3 รูป (เลือกได้)",
+            location: "บ้าน, ร้านอาหาร, พื้นที่ส่วนตัว",
+            includes: "สวดมนต์ / ทำพิธีเสริมดวงวันเกิด",
+            price: "3,500 บาท",
+            note: "สามารถเลือกฤกษ์วันเกิดที่เหมาะสมผ่านระบบได้ฟรี",
+        },
+    };
+
+    return serviceDetails[serviceType] || null;
+}
+
 const SERVICES = ["car", "home", "birth", "company", "wedding"];
 
 export default function TempleDetailPage() {
@@ -431,6 +494,78 @@ export default function TempleDetailPage() {
                             </p>
                         </div>
                     </div>
+
+                    {/* Service Details and Pricing */}
+                    {(() => {
+                        const serviceDetails = getServiceDetails(
+                            service as string
+                        );
+                        if (!serviceDetails) return null;
+
+                        return (
+                            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-4 md:p-6 mb-8">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <span className="text-2xl">
+                                        {serviceDetails.emoji}
+                                    </span>
+                                    <h2 className="text-lg md:text-xl font-bold text-gray-800">
+                                        {serviceDetails.fullName}
+                                    </h2>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-3">
+                                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                                            <span className="font-semibold text-gray-700 min-w-20">
+                                                จำนวนพระ
+                                            </span>
+                                            <span className="text-gray-600">
+                                                {serviceDetails.monks}
+                                            </span>
+                                        </div>
+                                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                                            <span className="font-semibold text-gray-700 min-w-20">
+                                                สถานที่
+                                            </span>
+                                            <span className="text-gray-600">
+                                                {serviceDetails.location}
+                                            </span>
+                                        </div>
+                                        <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3">
+                                            <span className="font-semibold text-gray-700 min-w-20">
+                                                สิ่งที่รวม
+                                            </span>
+                                            <span className="text-gray-600">
+                                                {serviceDetails.includes}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <div className="bg-white rounded-lg p-4 border border-yellow-200">
+                                            <div className="text-center">
+                                                <p className="text-sm text-gray-600 mb-1">
+                                                    ราคามาตรฐาน
+                                                </p>
+                                                <p className="text-2xl font-bold text-yellow-700">
+                                                    {serviceDetails.price}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {serviceDetails.note && (
+                                            <div className="bg-yellow-100 border border-yellow-200 rounded-lg p-3">
+                                                <p className="text-sm text-yellow-800">
+                                                    <strong>หมายเหตุ:</strong>{" "}
+                                                    {serviceDetails.note}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })()}
 
                     {/* Review System */}
                     <div className="border-t border-b py-6 md:py-8 space-y-6">
