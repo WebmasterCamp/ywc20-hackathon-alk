@@ -335,36 +335,6 @@ export default function TempleDetailPage() {
         );
     }
 
-    // Show authentication required message
-    if (!session?.user) {
-        return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="text-center max-w-md mx-auto p-6">
-                    <h1 className="text-2xl font-bold text-gray-800 mb-4">
-                        จำเป็นต้องเข้าสู่ระบบ
-                    </h1>
-                    <p className="text-gray-600 mb-6">
-                        กรุณาเข้าสู่ระบบเพื่อทำการจองบริการ
-                    </p>
-                    <div className="space-y-3">
-                        <button
-                            onClick={signIn}
-                            className="w-full bg-yellow-normal hover:bg-yellow-normal-hover text-white font-medium py-3 px-6 rounded-lg transition-colors"
-                        >
-                            เข้าสู่ระบบ
-                        </button>
-                        <button
-                            onClick={() => router.back()}
-                            className="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-6 rounded-lg transition-colors"
-                        >
-                            กลับไปหน้าก่อนหน้า
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     if (!templeData) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -593,19 +563,36 @@ export default function TempleDetailPage() {
                         </div>
 
                         {/* Review Form - Show form for writing own review after existing reviews */}
-                        {session?.user && templeData && (
-                            <div className="border-t pt-6">
-                                <h3 className="text-md font-semibold text-gray-800 mb-4">
-                                    เขียนรีวิวของคุณ
-                                </h3>
+                        <div className="border-t pt-6">
+                            <h3 className="text-md font-semibold text-gray-800 mb-4">
+                                เขียนรีวิวของคุณ
+                            </h3>
+                            {session?.user && templeData ? (
                                 <ReviewForm
                                     userId={session.user.id}
                                     templeSlug={templeData.temple.slug}
                                     serviceType={service as string}
                                     onReviewSubmitted={handleReviewSubmitted}
                                 />
-                            </div>
-                        )}
+                            ) : (
+                                <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
+                                    <div className="text-gray-600 mb-4">
+                                        <p className="font-medium mb-2">
+                                            จำเป็นต้องเข้าสู่ระบบ
+                                        </p>
+                                        <p className="text-sm">
+                                            กรุณาเข้าสู่ระบบเพื่อเขียนรีวิวบริการ
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={signIn}
+                                        className="bg-yellow-normal hover:bg-yellow-normal-hover text-white font-medium py-2 px-6 rounded-lg transition-colors"
+                                    >
+                                        เข้าสู่ระบบ
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* Booking Form */}
@@ -627,23 +614,43 @@ export default function TempleDetailPage() {
 
                         {/* Submit Button */}
                         <div className="mt-6 md:mt-8 space-y-4">
-                            <button
-                                onClick={handleSubmit}
-                                disabled={submitting}
-                                className="w-full bg-yellow-normal hover:bg-yellow-normal-hover disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-                            >
-                                {submitting ? (
-                                    <>
-                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                        กำลังส่งคำจอง...
-                                    </>
-                                ) : (
-                                    <>
+                            {session?.user ? (
+                                <button
+                                    onClick={handleSubmit}
+                                    disabled={submitting}
+                                    className="w-full bg-yellow-normal hover:bg-yellow-normal-hover disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                                >
+                                    {submitting ? (
+                                        <>
+                                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                            กำลังส่งคำจอง...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Send className="w-4 h-4" />
+                                            ส่งคำจองบริการ
+                                        </>
+                                    )}
+                                </button>
+                            ) : (
+                                <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
+                                    <div className="text-gray-600 mb-4">
+                                        <p className="font-medium mb-2">
+                                            จำเป็นต้องเข้าสู่ระบบ
+                                        </p>
+                                        <p className="text-sm">
+                                            กรุณาเข้าสู่ระบบเพื่อทำการจองบริการ
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={signIn}
+                                        className="bg-yellow-normal hover:bg-yellow-normal-hover text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 mx-auto"
+                                    >
                                         <Send className="w-4 h-4" />
-                                        ส่งคำจองบริการ
-                                    </>
-                                )}
-                            </button>
+                                        เข้าสู่ระบบเพื่อจอง
+                                    </button>
+                                </div>
+                            )}
 
                             <p className="text-xs text-gray-500 text-center">
                                 💡 หลังจากส่งคำจอง
