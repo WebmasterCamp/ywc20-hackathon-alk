@@ -301,9 +301,6 @@ export default function TempleDetailPage() {
                         <ArrowLeft className="w-5 h-5" />
                     </button>
                     <div className="flex items-center gap-2">
-                        <span className="text-xl">
-                            {getServiceIcon(service)}
-                        </span>
                         <span className="font-semibold text-gray-800 truncate">
                             {templeData.temple.name}
                         </span>
@@ -330,9 +327,6 @@ export default function TempleDetailPage() {
                         >
                             <ArrowLeft className="w-5 h-5" />
                         </button>
-                        <span className="text-2xl">
-                            {getServiceIcon(service)}
-                        </span>
                         <h1 className="text-2xl font-bold text-gray-800">
                             {getServiceNameThai(service)} ที่{" "}
                             {templeData.temple.name}
@@ -407,7 +401,7 @@ export default function TempleDetailPage() {
                     {/* Booking Form */}
                     <div className="border-t pt-6 md:pt-8">
                         <h2 className="text-lg md:text-xl font-bold text-gray-800 mb-4 md:mb-6">
-                            📝 ฟอร์มจองบริการ
+                            ฟอร์มจองบริการ
                         </h2>
 
                         <DynamicForm

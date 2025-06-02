@@ -191,7 +191,7 @@ const DynamicForm = ({
             {/* Date and Time Selection */}
             <div className="bg-blue-50 p-6 rounded-xl border border-blue-200">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                    📅 เลือกวันที่และเวลาที่ต้องการใช้บริการ
+                    เลือกวันที่และเวลาที่ต้องการใช้บริการ
                 </h3>
 
                 <div className="grid md:grid-cols-2 gap-4">
