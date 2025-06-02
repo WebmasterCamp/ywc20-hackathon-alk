@@ -64,7 +64,7 @@ export default function Navbar() {
                     <ActiveLink href="/home">ขึ้นบ้านใหม่</ActiveLink>
                     <ActiveLink href="/wedding">งานแต่ง</ActiveLink>
                     <ActiveLink href="/company">ทำบุญบริษัท</ActiveLink>
-                    <ActiveLink href="/birthday">ทำบุญวันเกิด</ActiveLink>
+                    <ActiveLink href="/birth">ทำบุญวันเกิด</ActiveLink>
                     {!!session && (
                         <Link href="/user">
                             <img
