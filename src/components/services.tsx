@@ -66,18 +66,20 @@ export default function Services() {
                         พิธีกรรมมากมาย สะดวก รวดเร็ว ใกล้คุณ
                     </p>
                 </div>
-                <div className="grid grid-cols-5 gap-6">
+                <div className="grid lg:grid-cols-5 grid-cols-3 gap-6">
                     {services.map((service) => (
                         <Link
                             href={`/${service.type}`}
                             key={service.name}
                             className="flex flex-col text-brown-normal items-center justify-center bg-[#FEF8E4] py-4 rounded-2xl"
                         >
-                            <img
-                                className="h-[100px] mb-6"
-                                src={service.image}
-                                alt={service.name}
-                            />
+                            <div className="w-20 h-20">
+                                <img
+                                    className="mb-6 w-full object-cover"
+                                    src={service.image}
+                                    alt={service.name}
+                                />
+                            </div>
                             <p className="text-xl font-bold">{service.name}</p>
                         </Link>
                     ))}

@@ -5,6 +5,8 @@ import React from "react";
 export default function Hero() {
     return (
         <div className="relative flex justify-center h-[calc(100vh-76px)] bg-[#FEF8E4]">
+            <img className="absolute left-0 bottom-0" src="/grass.svg" alt="grass" />
+            <img className="absolute right-2/3 top-1/6" src="/cloud.svg" alt="grass" />
             <img
                 className="absolute top-0 right-0 h-full object-cover"
                 src="/monk.svg"
