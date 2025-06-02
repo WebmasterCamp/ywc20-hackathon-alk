@@ -78,7 +78,7 @@ export default function Navbar() {
                             />
                         </Link>
                     )}
-                    {!session && (
+                    {!!session && (
                         <button
                             type="button"
                             onClick={signIn}
