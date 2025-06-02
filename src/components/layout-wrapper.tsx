@@ -12,7 +12,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
     <>
       {isRoot && <Navbar />}
       {children}
-      {isRoot && <Footer />}
+      <div className="mt-20">{isRoot && <Footer />}</div>
     </>
   );
 }

@@ -27,7 +27,7 @@ export default function Navbar() {
                 <p>หน้าหลัก</p>
                 <Link
                     href={session?.user ? "/user" : "/auth"}
-                    className="w-10 h-10 overflow-hidden rounded-[1/2]"
+                    className="w-10 h-10 overflow-hidden rounded-[50%]"
                 >
                     <img
                         className="w-full object-cover"
