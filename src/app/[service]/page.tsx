@@ -181,9 +181,6 @@ export default function ServicePage() {
                         <ArrowLeft className="w-5 h-5" />
                     </button>
                     <div className="flex items-center gap-2">
-                        <span className="text-2xl">
-                            {getServiceIcon(service)}
-                        </span>
                         <h1 className="text-lg font-semibold text-gray-800">
                             {getServiceName(service)}
                         </h1>
@@ -202,9 +199,6 @@ export default function ServicePage() {
                         >
                             <ArrowLeft className="w-5 h-5" />
                         </button>
-                        <span className="text-3xl">
-                            {getServiceIcon(service)}
-                        </span>
                         <div>
                             <h1 className="text-2xl font-bold text-gray-800">
                                 {getServiceName(service)}
@@ -219,7 +213,7 @@ export default function ServicePage() {
 
                 <div className="grid lg:grid-cols-5 gap-6">
                     {/* Left Sidebar - Location & Filters */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="lg:col-span-1 space-y-6">
                         {/* Location Picker */}
                         <div className="bg-white p-4 lg:p-6 rounded-xl shadow-sm border border-gray-200">
                             <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
@@ -228,7 +222,7 @@ export default function ServicePage() {
                             </h2>
                             <LocationPicker
                                 onLocationSelected={handleLocationSelected}
-                                placeholder={`เลือกที่อยู่เพื่อค้นหา${getServiceName(
+                                placeholder={`ค้นหา${getServiceName(
                                     service
                                 )}`}
                                 temples={temples}
@@ -331,7 +325,7 @@ export default function ServicePage() {
                     </div>
 
                     {/* Right Content - Temple List */}
-                    <div className="lg:col-span-3">
+                    <div className="lg:col-span-4">
                         {initialLoading ? (
                             /* Initial Loading */
                             <div className="space-y-4">
@@ -359,16 +353,6 @@ export default function ServicePage() {
                             <>
                                 {/* Results Header */}
                                 <div className="mb-6">
-                                    <div className="flex items-center justify-between">
-                                        <h2 className="text-xl font-semibold text-gray-800">
-                                            {selectedLocation
-                                                ? "วัดใกล้คุณ"
-                                                : "วัดทั้งหมด"}
-                                        </h2>
-                                        <div className="text-sm text-gray-600">
-                                            {temples.length} วัด
-                                        </div>
-                                    </div>
                                     <p className="text-gray-600 mt-1">
                                         วัดที่ให้บริการ{getServiceName(service)}
                                         {selectedLocation &&
@@ -396,7 +380,7 @@ export default function ServicePage() {
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="grid gap-6 md:grid-cols-1 xl:grid-cols-2">
+                                    <div className="grid gap-6 md:grid-cols-1 xl:grid-cols-3">
                                         {sortedTemples.map((temple) => (
                                             <TempleCard
                                                 key={temple.id}
