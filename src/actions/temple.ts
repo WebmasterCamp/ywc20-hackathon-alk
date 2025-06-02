@@ -304,7 +304,7 @@ export async function getServiceRating(
 }
 
 // Update temple overall rating (this updates the temple table rating based on all services)
-async function updateTempleRating(templeSlug: string, serviceType: string) {
+async function updateTempleRating(templeSlug: string) {
     try {
         const db = getDb();
 
