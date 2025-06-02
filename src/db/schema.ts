@@ -158,3 +158,34 @@ export const order = mysqlTable("order", {
     createdAt: datetime("createdAt").notNull(),
     updatedAt: datetime("updatedAt").notNull(),
 });
+
+// Review table for temple + service reviews
+export const review = mysqlTable(
+    "review",
+    {
+        id: int("id").primaryKey().autoincrement(),
+        userId: varchar("userId", { length: 255 })
+            .notNull()
+            .references(() => user.id),
+        templeSlug: varchar("templeSlug", { length: 255 })
+            .notNull()
+            .references(() => temple.slug),
+        serviceType: varchar("serviceType", { length: 255 }).notNull(), // car, home, birth, company, wedding
+        rating: int("rating").notNull(), // 1-5
+        comment: text("comment"), // optional comment
+        createdAt: datetime("createdAt")
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+        updatedAt: datetime("updatedAt")
+            .default(sql`CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`)
+            .notNull(),
+    },
+    (table) => ({
+        // Ensure one review per user per temple+service combination
+        userTempleServiceUnique: unique("user_temple_service_unique").on(
+            table.userId,
+            table.templeSlug,
+            table.serviceType
+        ),
+    })
+);

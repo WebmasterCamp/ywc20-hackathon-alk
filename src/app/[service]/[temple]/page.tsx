@@ -13,10 +13,16 @@ import {
 } from "lucide-react";
 import ImageCarousel from "@/components/ImageCarousel";
 import DynamicForm, { FormField } from "@/components/DynamicForm";
+import ReviewForm from "@/components/ReviewForm";
+import ReviewsList from "@/components/ReviewsList";
+import ServiceRatingDisplay from "@/components/ServiceRatingDisplay";
 import {
     getTempleServiceDetail,
     createOrder,
     TempleServiceDetail,
+    getReviews,
+    getServiceRating,
+    ReviewWithUser,
 } from "@/actions/temple";
 import { authClient } from "@/lib/auth-client";
 
@@ -50,9 +56,18 @@ export default function TempleDetailPage() {
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [submitting, setSubmitting] = useState(false);
 
+    // Review system state
+    const [reviews, setReviews] = useState<ReviewWithUser[]>([]);
+    const [serviceRating, setServiceRating] = useState({
+        averageRating: 0,
+        reviewCount: 0,
+    });
+    const [reviewsLoading, setReviewsLoading] = useState(true);
+
     useEffect(() => {
         if (typeof service === "string" && typeof temple === "string") {
             loadTempleData(temple, service);
+            loadReviewData(temple, service);
         }
     }, [service, temple]);
 
@@ -65,6 +80,29 @@ export default function TempleDetailPage() {
             console.error("Error loading temple data:", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const loadReviewData = async (templeSlug: string, serviceType: string) => {
+        setReviewsLoading(true);
+        try {
+            const [reviewsData, ratingData] = await Promise.all([
+                getReviews(templeSlug, serviceType),
+                getServiceRating(templeSlug, serviceType),
+            ]);
+            setReviews(reviewsData);
+            setServiceRating(ratingData);
+        } catch (error) {
+            console.error("Error loading review data:", error);
+        } finally {
+            setReviewsLoading(false);
+        }
+    };
+
+    const handleReviewSubmitted = () => {
+        // Reload review data after a review is submitted
+        if (typeof service === "string" && typeof temple === "string") {
+            loadReviewData(temple, service);
         }
     };
 
@@ -317,7 +355,7 @@ export default function TempleDetailPage() {
                             <ArrowLeft className="w-5 h-5" />
                         </button>
                         <h1 className="text-2xl font-bold text-gray-800">
-                            {getServiceNameThai(service)} ที่{" "}
+                            {getServiceNameThai(service as string)} ที่{" "}
                             {templeData.temple.name}
                         </h1>
                     </div>
@@ -330,7 +368,7 @@ export default function TempleDetailPage() {
                             </h1>
                             <div className="inline-flex items-center bg-yellow-light px-3 py-1 rounded-lg">
                                 <span className="text-yellow-dark font-medium text-sm">
-                                    {getServiceNameThai(service)}
+                                    {getServiceNameThai(service as string)}
                                 </span>
                             </div>
                         </div>
@@ -387,8 +425,49 @@ export default function TempleDetailPage() {
                         </div>
                     </div>
 
+                    {/* Review System */}
+                    <div className="border-t border-b py-6 md:py-8 space-y-6">
+                        <h2 className="text-lg md:text-xl font-bold text-gray-800">
+                            รีวิวบริการ
+                        </h2>
+
+                        {/* Service Rating Display */}
+                        <ServiceRatingDisplay
+                            averageRating={serviceRating.averageRating}
+                            reviewCount={serviceRating.reviewCount}
+                            serviceName={getServiceNameThai(service as string)}
+                            loading={reviewsLoading}
+                        />
+
+                        {/* Reviews List - Show existing reviews from other users first */}
+                        <div>
+                            <h3 className="text-md font-semibold text-gray-800 mb-4">
+                                รีวิวจากผู้ใช้งาน ({serviceRating.reviewCount})
+                            </h3>
+                            <ReviewsList
+                                reviews={reviews}
+                                loading={reviewsLoading}
+                            />
+                        </div>
+
+                        {/* Review Form - Show form for writing own review after existing reviews */}
+                        {session?.user && templeData && (
+                            <div className="border-t pt-6">
+                                <h3 className="text-md font-semibold text-gray-800 mb-4">
+                                    เขียนรีวิวของคุณ
+                                </h3>
+                                <ReviewForm
+                                    userId={session.user.id}
+                                    templeSlug={templeData.temple.slug}
+                                    serviceType={service as string}
+                                    onReviewSubmitted={handleReviewSubmitted}
+                                />
+                            </div>
+                        )}
+                    </div>
+
                     {/* Booking Form */}
-                    <div className="border-t pt-6 md:pt-8">
+                    <div className="pt-6 md:pt-8">
                         <h2 className="text-lg md:text-xl font-bold text-gray-800 mb-4 md:mb-6">
                             ฟอร์มจองบริการ
                         </h2>

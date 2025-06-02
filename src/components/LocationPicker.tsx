@@ -653,7 +653,7 @@ const LocationPicker = ({
                                     <p className="text-sm text-gray-500">
                                         กำหนดที่อยู่
                                     </p>
-                                    <p className="font-medium text-gray-600 truncate">
+                                    <p className="font-medium text-gray-600 break-words">
                                         {placeholder}
                                     </p>
                                 </div>

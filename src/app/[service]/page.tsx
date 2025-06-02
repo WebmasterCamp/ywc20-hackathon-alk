@@ -69,7 +69,7 @@ export default function ServicePage() {
         return icons[type] || "🏛️";
     };
 
-    // Load temple data from database
+    // Load temple data from database (only once on mount)
     const loadTempleData = useCallback(
         async (serviceType: string) => {
             setInitialLoading(true);
@@ -77,10 +77,9 @@ export default function ServicePage() {
                 const servicesWithTemples = await getServicesByType(
                     serviceType
                 );
+                // Transform without location data first
                 const templeData = await transformToTempleData(
-                    servicesWithTemples,
-                    selectedLocation?.latitude,
-                    selectedLocation?.longitude
+                    servicesWithTemples
                 );
                 setTemples(templeData);
             } catch (error) {
@@ -90,10 +89,10 @@ export default function ServicePage() {
                 setInitialLoading(false);
             }
         },
-        [selectedLocation]
+        [] // Remove selectedLocation dependency
     );
 
-    // Load initial data when component mounts
+    // Load initial data when component mounts (only once)
     useEffect(() => {
         if (typeof service === "string" && SERVICES.includes(service)) {
             loadTempleData(service);
@@ -118,30 +117,28 @@ export default function ServicePage() {
         []
     );
 
-    // Update temple distances when location changes
+    // Update temple distances when location changes (without re-fetching data)
     useEffect(() => {
-        if (
-            selectedLocation &&
-            temples.length > 0 &&
-            typeof service === "string"
-        ) {
+        if (selectedLocation && temples.length > 0) {
             setLoading(true);
 
-            // Recalculate distances for existing temples
-            const updatedTemples = temples.map((temple) => ({
-                ...temple,
-                distance: calculateDistance(
-                    selectedLocation.latitude,
-                    selectedLocation.longitude,
-                    temple.latitude,
-                    temple.longitude
-                ),
-            }));
+            // Use setTimeout to simulate smooth loading and prevent blocking
+            setTimeout(() => {
+                const updatedTemples = temples.map((temple) => ({
+                    ...temple,
+                    distance: calculateDistance(
+                        selectedLocation.latitude,
+                        selectedLocation.longitude,
+                        temple.latitude,
+                        temple.longitude
+                    ),
+                }));
 
-            setTemples(updatedTemples);
+                setTemples(updatedTemples);
+                setLoading(false);
+            }, 100); // Short delay for smooth UX
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedLocation, service, calculateDistance]);
+    }, [selectedLocation, calculateDistance]);
 
     const handleLocationSelected = (location: LocationData) => {
         setSelectedLocation(location);
@@ -206,9 +203,9 @@ export default function ServicePage() {
                     </div>
                 </div>
 
-                <div className="grid lg:grid-cols-5 gap-6">
+                <div className="flex gap-6">
                     {/* Left Sidebar - Location & Filters */}
-                    <div className="lg:col-span-1 space-y-6">
+                    <div className="min-w-[350px] max-w-[350px] space-y-6">
                         {/* Location Picker */}
                         <div className="bg-white p-4 lg:p-6 rounded-xl shadow-sm border border-gray-200">
                             <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
@@ -320,7 +317,7 @@ export default function ServicePage() {
                     </div>
 
                     {/* Right Content - Temple List */}
-                    <div className="lg:col-span-4">
+                    <div className="w-full">
                         {initialLoading ? (
                             /* Initial Loading */
                             <div className="space-y-4">
@@ -348,7 +345,7 @@ export default function ServicePage() {
                             <>
                                 {/* Results Header */}
                                 <div className="mb-6">
-                                    <p className="text-gray-600 mt-1">
+                                    <p className="text-gray-600 mt-1 ">
                                         วัดที่ให้บริการ{getServiceName(service)}
                                         {selectedLocation &&
                                             ` ใกล้ ${selectedLocation.shortAddress}`}
