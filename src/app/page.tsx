@@ -24,8 +24,10 @@ export default function Home() {
     return (
         <div>
             <Hero />
-            <Services />
-            <Yann />
+            <div className="px-5">
+                <Services />
+                <Yann />
+            </div>
         </div>
     );
 }
