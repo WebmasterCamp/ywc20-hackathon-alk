@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { service, temple } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
@@ -70,6 +70,7 @@ export async function getServicesByType(
     serviceType: string
 ): Promise<TempleWithService[]> {
     try {
+        const db = getDb();
         const servicesWithTemples = await db
             .select({
                 id: service.id,

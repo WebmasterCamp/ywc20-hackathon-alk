@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { service, temple, order } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 
@@ -49,6 +49,7 @@ export async function getTempleServiceDetail(
     serviceType: string
 ): Promise<TempleServiceDetail | null> {
     try {
+        const db = getDb();
         const result = await db
             .select({
                 temple: {
@@ -97,6 +98,7 @@ export async function createOrder(
     orderData: OrderFormData
 ): Promise<{ success: boolean; orderId?: number; error?: string }> {
     try {
+        const db = getDb();
         const result = await db.insert(order).values({
             userId: userId,
             serviceId: orderData.serviceId,

@@ -1,20 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { createPool } from "mysql2/promise";
-import { URL } from "url";
-
-const dbUrl = new URL(process.env.DATABASE_URL as string);
-
-const db = createPool({
-    host: dbUrl.hostname,
-    port: parseInt(dbUrl.port),
-    user: dbUrl.username,
-    password: dbUrl.password,
-    database: dbUrl.pathname.slice(1),
-});
+import { createDatabaseConnection } from "@/lib/database";
 
 export async function POST(request: NextRequest) {
     try {
+        // Create database connection inside the handler
+        const db = createDatabaseConnection();
+
         // Check authentication
         const session = await auth.api.getSession({
             headers: request.headers,
@@ -41,6 +33,9 @@ export async function POST(request: NextRequest) {
              WHERE id = ?`,
             [name, phone, address, processedBirthDate, session.user.id]
         );
+
+        // Close the database connection
+        await db.end();
 
         return NextResponse.json(
             { message: "User updated successfully" },
