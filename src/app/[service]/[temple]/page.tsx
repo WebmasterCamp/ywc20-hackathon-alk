@@ -22,7 +22,7 @@ import { authClient } from "@/lib/auth-client";
 
 function getServiceNameThai(serviceType: string): string {
     const serviceNames: { [key: string]: string } = {
-        car: "บริการเจิมรถ",
+        car: "เขียนยันต์",
         home: "ทำบุญขึ้นบ้านใหม่",
         birth: "พิธีขึ้นชื่อ",
         company: "เปิดบริษัท/ร้านค้า",
@@ -161,9 +161,9 @@ export default function TempleDetailPage() {
             });
 
             if (result.success) {
-                // Success - redirect to success page or show success message
+                // Success - redirect to order detail page
                 alert("จองบริการสำเร็จ! เราจะติดต่อกลับไปในเร็วๆ นี้");
-                router.push(`/user`);
+                router.push(`/user/orders/${result.orderId}`);
             } else {
                 alert(result.error || "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
             }
