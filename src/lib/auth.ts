@@ -5,7 +5,11 @@ import { URL } from "url";
 
 // Safe database URL parsing with fallback
 function createAuthDatabase() {
-    const databaseUrl = process.env.DATABASE_URL;
+    // Hardcode DATABASE_URL for production in hackathon environment
+    const databaseUrl =
+        process.env.NODE_ENV === "production"
+            ? "mysql://ywc20:ywc20@103.216.158.214:3306/ywc20_proj_dev"
+            : process.env.DATABASE_URL;
 
     if (!databaseUrl) {
         // Return a minimal configuration for build time
@@ -33,6 +37,16 @@ function createAuthDatabase() {
 
 export const auth = betterAuth({
     database: createAuthDatabase(),
+    // Hardcode auth secret for production
+    secret:
+        process.env.NODE_ENV === "production"
+            ? "AxUmrKvwMvAdNSHfNmCztNGKpDy06FUf"
+            : process.env.BETTER_AUTH_SECRET,
+    // Hardcode base URL for production
+    baseURL:
+        process.env.NODE_ENV === "production"
+            ? "https://ywc20-hackathon-alk.vercel.app"
+            : process.env.BETTER_AUTH_URL,
     socialProviders: {
         google: {
             clientId:
@@ -45,7 +59,7 @@ export const auth = betterAuth({
             clientSecret:
                 process.env.NODE_ENV === "production"
                     ? Buffer.from(
-                          "R09DU1BYLVJ4RWdSaUFqRS0tcTZSZEtWZWN6bjVuS095S3U=",
+                          "R09DU1BYLVJ4RWdSaUFqRS0tcTZSZEtWZWN6bjVuS085S3U=",
                           "base64"
                       ).toString("utf-8")
                     : (process.env.GOOGLE_CLIENT_SECRET_DEV as string),

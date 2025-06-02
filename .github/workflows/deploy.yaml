@@ -39,10 +39,6 @@ jobs:
               run: pnpm install
 
             - name: Build project
-              env:
-                  DATABASE_URL: mysql://ywc20:ywc20@103.216.158.214:3306/ywc20_proj_dev
-                  BETTER_AUTH_SECRET: AxUmrKvwMvAdNSHfNmCztNGKpDy06FUf
-                  BETTER_AUTH_URL: https://ywc20-hackathon-alk.vercel.app/
               run: pnpm run build
 
             - name: Deploy to Vercel
