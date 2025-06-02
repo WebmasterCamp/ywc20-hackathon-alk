@@ -59,7 +59,7 @@ export const auth = betterAuth({
             clientSecret:
                 process.env.NODE_ENV === "production"
                     ? Buffer.from(
-                          "R09DU1BYLVJ4RWdSaUFqRS0tcTZSZEtWZWN6bjVuS085S3U=",
+                          "R09DU1BYLVJ4RWdSaUFqRS0tcTZSZEtWZWN6bjVuS095S3U=",
                           "base64"
                       ).toString("utf-8")
                     : (process.env.GOOGLE_CLIENT_SECRET_DEV as string),
