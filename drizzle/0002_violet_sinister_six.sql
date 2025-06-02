@@ -1,1 +1,0 @@
-ALTER TABLE `order` ADD `date` datetime NOT NULL;

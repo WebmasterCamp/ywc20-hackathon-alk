@@ -1,0 +1,2 @@
+-- Database structure already exists, marking as applied
+-- No changes needed

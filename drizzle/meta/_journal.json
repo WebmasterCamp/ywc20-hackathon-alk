@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1748808481411,
-      "tag": "0000_bizarre_songbird",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1748809703489,
-      "tag": "0001_nappy_swarm",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1748810055437,
-      "tag": "0002_violet_sinister_six",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1748814529113,
-      "tag": "0003_calm_lady_bullseye",
+      "when": 1748843246234,
+      "tag": "0000_next_swarm",
       "breakpoints": true
     }
   ]
