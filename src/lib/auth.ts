@@ -45,7 +45,7 @@ export const auth = betterAuth({
     // Hardcode base URL for production
     baseURL:
         process.env.NODE_ENV === "production"
-            ? "https://ywc20-hackathon-alk.vercel.app"
+            ? "https://ywc20-hackathon-alk.vercel.app/"
             : process.env.BETTER_AUTH_URL,
     socialProviders: {
         google: {
