@@ -1,17 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { createPool } from "mysql2/promise";
-import { URL } from "url";
-
-const dbUrl = new URL(process.env.DATABASE_URL as string);
-
-const db = createPool({
-    host: dbUrl.hostname,
-    port: parseInt(dbUrl.port),
-    user: dbUrl.username,
-    password: dbUrl.password,
-    database: dbUrl.pathname.slice(1),
-});
+import { createDatabaseConnection } from "@/lib/database";
 
 interface BookingRow {
     id: number;
@@ -29,6 +18,9 @@ interface BookingRow {
 
 export async function GET(request: NextRequest) {
     try {
+        // Create database connection inside the handler
+        const db = createDatabaseConnection();
+
         // Check authentication
         const session = await auth.api.getSession({
             headers: request.headers,
@@ -82,6 +74,9 @@ export async function GET(request: NextRequest) {
             completedAt: row.completedAt,
             cancelledAt: row.cancelledAt,
         }));
+
+        // Close the database connection
+        await db.end();
 
         return NextResponse.json(bookings, { status: 200 });
     } catch (error) {

@@ -1,17 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { createPool } from "mysql2/promise";
-import { URL } from "url";
-
-const dbUrl = new URL(process.env.DATABASE_URL as string);
-
-const db = createPool({
-    host: dbUrl.hostname,
-    port: parseInt(dbUrl.port),
-    user: dbUrl.username,
-    password: dbUrl.password,
-    database: dbUrl.pathname.slice(1),
-});
+import { createDatabaseConnection } from "@/lib/database";
 
 interface OrderRow {
     id: number;
@@ -35,6 +24,9 @@ export async function GET(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        // Create database connection inside the handler
+        const db = createDatabaseConnection();
+
         // Check authentication
         const session = await auth.api.getSession({
             headers: request.headers,
@@ -104,6 +96,9 @@ export async function GET(
             completedAt: order.completedAt,
             cancelledAt: order.cancelledAt,
         };
+
+        // Close the database connection
+        await db.end();
 
         return NextResponse.json(orderDetail, { status: 200 });
     } catch (error) {
