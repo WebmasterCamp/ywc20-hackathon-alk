@@ -163,7 +163,7 @@ export default function TempleDetailPage() {
             if (result.success) {
                 // Success - redirect to success page or show success message
                 alert("จองบริการสำเร็จ! เราจะติดต่อกลับไปในเร็วๆ นี้");
-                router.push(`/${service}`);
+                router.push(`/user`);
             } else {
                 alert(result.error || "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
             }
@@ -401,7 +401,7 @@ export default function TempleDetailPage() {
                     {/* Booking Form */}
                     <div className="border-t pt-6 md:pt-8">
                         <h2 className="text-lg md:text-xl font-bold text-gray-800 mb-4 md:mb-6">
-                            📝 ฟอร์มจองบริการ
+                            ฟอร์มจองบริการ
                         </h2>
 
                         <DynamicForm
