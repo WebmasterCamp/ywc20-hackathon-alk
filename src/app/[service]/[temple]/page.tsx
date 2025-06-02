@@ -31,17 +31,6 @@ function getServiceNameThai(serviceType: string): string {
     return serviceNames[serviceType] || serviceType;
 }
 
-function getServiceIcon(serviceType: string): string {
-    const icons: { [key: string]: string } = {
-        car: "🚗",
-        home: "🏠",
-        birth: "👶",
-        company: "🏢",
-        wedding: "💒",
-    };
-    return icons[serviceType] || "🏛️";
-}
-
 const SERVICES = ["car", "home", "birth", "company", "wedding"];
 
 export default function TempleDetailPage() {
