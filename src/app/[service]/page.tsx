@@ -139,11 +139,6 @@ export default function ServicePage() {
             }));
 
             setTemples(updatedTemples);
-
-            // Simulate API delay
-            setTimeout(() => {
-                setLoading(false);
-            }, 1000);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedLocation, service, calculateDistance]);
