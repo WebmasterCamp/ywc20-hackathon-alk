@@ -64,6 +64,13 @@ export default function TempleDetailPage() {
     });
     const [reviewsLoading, setReviewsLoading] = useState(true);
 
+    const signIn = async () => {
+        const data = await authClient.signIn.social({
+            provider: "google",
+        });
+        console.log(data);
+    };
+
     useEffect(() => {
         if (typeof service === "string" && typeof temple === "string") {
             loadTempleData(temple, service);
@@ -157,7 +164,7 @@ export default function TempleDetailPage() {
         // Check if user is authenticated
         if (!session?.user) {
             alert("กรุณาเข้าสู่ระบบก่อนทำการจอง");
-            router.push("/auth");
+            signIn();
             return;
         }
 
@@ -278,7 +285,7 @@ export default function TempleDetailPage() {
                     </p>
                     <div className="space-y-3">
                         <button
-                            onClick={() => router.push("/auth")}
+                            onClick={signIn}
                             className="w-full bg-yellow-normal hover:bg-yellow-normal-hover text-white font-medium py-3 px-6 rounded-lg transition-colors"
                         >
                             เข้าสู่ระบบ
