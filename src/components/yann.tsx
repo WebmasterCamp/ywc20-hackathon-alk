@@ -13,7 +13,7 @@ export default function Yann() {
                         พิธีกรรมมากมาย สะดวก รวดเร็ว ใกล้คุณ
                     </p>
                 </div>
-                <div className="grid grid-cols-3 gap-6">
+                <div className="grid lg:grid-cols-3 grid-cols-1 gap-6">
                     <div>
                         <img
                             src="/images/watt1.png"
@@ -30,7 +30,9 @@ export default function Yann() {
                             โดยเฉพาะผู้ประกอบการที่เดินทางบ่อยและค้าขาย
                         </p>
                         <Link href="#">
-                            <ArrowRight />
+                            <div className="flex items-center">
+                                <p className="text-brown-normal lg:hidden mr-2">จองเลย</p> <ArrowRight className="text-brown-normal" />
+                            </div>
                         </Link>
                     </div>
                     <div>
@@ -50,7 +52,9 @@ export default function Yann() {
                             ที่โด่งดังเรื่องเมตตาและคุ้มครองภัย
                         </p>
                         <Link href="#">
-                            <ArrowRight />
+                            <div className="flex items-center">
+                                <p className="text-brown-normal lg:hidden mr-2">จองเลย</p> <ArrowRight className="text-brown-normal" />
+                            </div>
                         </Link>
                     </div>
                     <div>
@@ -72,7 +76,9 @@ export default function Yann() {
                             และเจิมรถใหม่เพื่อความมั่งคั่ง
                         </p>
                         <Link href="#">
-                            <ArrowRight />
+                            <div className="flex items-center">
+                                <p className="text-brown-normal lg:hidden mr-2">จองเลย</p> <ArrowRight className="text-brown-normal" />
+                            </div>
                         </Link>
                     </div>
                 </div>
