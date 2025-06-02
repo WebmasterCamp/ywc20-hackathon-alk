@@ -95,7 +95,20 @@ export default function Navbar() {
                     )}
                 </div>
                 <div className="flex gap-10 lg:hidden">
-                    <Menu className="text-brown-normal" onClick={() => setOpenMobileDrawer(true)} />
+                    {!session && (
+                        <button
+                            type="button"
+                            onClick={signIn}
+                            className="cursor-pointer"
+                        >
+                            <img
+                                className="h-[56px] aspect-[1/1] object-cover rounded-full"
+                                src="/images/AvatarPlaceHolder.png"
+                                alt="placeholder"
+                            />
+                        </button>
+                    )}
+                    <Menu className={`${session ? "block" : "hidden"} text-brown-normal`} onClick={() => setOpenMobileDrawer(true)} />
                 </div>
                 <div className={`${openMobileDrawer ? "right-0" : "right-[-100%]"} h-screen bg-white fixed top-0 w-full transition-all duration-300`}>
                     <div>
