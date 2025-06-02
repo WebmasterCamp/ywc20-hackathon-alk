@@ -29,7 +29,7 @@ export default function Navbar() {
 
         //     <div className="flex items-center justify-around w-full">
         //         <p className="text-brown-normal">หน้าหลัก</p>
-        //         <p>เจิมรถ</p>
+        //         <p>เขียนยันต์</p>
         //         <p>ขึ้นบ้านใหม่</p>
         //         <p>ทำบุญวันเกิด</p>
         //         <p>ทำบุญบริษัท</p>
@@ -60,7 +60,7 @@ export default function Navbar() {
                 </Link>
                 <div className="flex items-center gap-10">
                     <ActiveLink href="/">หน้าหลัก</ActiveLink>
-                    <ActiveLink href="/car">เจิมรถ</ActiveLink>
+                    <ActiveLink href="/car">เขียนยันต์</ActiveLink>
                     <ActiveLink href="/home">ขึ้นบ้านใหม่</ActiveLink>
                     <ActiveLink href="/wedding">งานแต่ง</ActiveLink>
                     <ActiveLink href="/company">ทำบุญบริษัท</ActiveLink>
@@ -79,7 +79,11 @@ export default function Navbar() {
                         </Link>
                     )}
                     {!session && (
-                        <button type="button" onClick={signIn} className="cursor-pointer">
+                        <button
+                            type="button"
+                            onClick={signIn}
+                            className="cursor-pointer"
+                        >
                             <img
                                 className="h-[56px] aspect-[1/1] object-cover rounded-full"
                                 src="/images/AvatarPlaceHolder.png"

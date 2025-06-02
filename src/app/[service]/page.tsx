@@ -49,7 +49,7 @@ export default function ServicePage() {
 
     const getServiceName = (type: string) => {
         const serviceNames: { [key: string]: string } = {
-            car: "บริการเจิมรถ",
+            car: "เขียนยันต์",
             home: "ทำบุญขึ้นบ้านใหม่",
             birth: "พิธีขึ้นชื่อ",
             company: "เปิดบริษัท/ร้านค้า",
