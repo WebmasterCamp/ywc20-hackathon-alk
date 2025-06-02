@@ -217,7 +217,7 @@ export default function ServicePage() {
                             </h2>
                             <LocationPicker
                                 onLocationSelected={handleLocationSelected}
-                                placeholder={`ค้นหา${getServiceName(
+                                placeholder={`ค้นหาวัดที่ให้บริการ${getServiceName(
                                     service
                                 )}`}
                                 temples={temples}
