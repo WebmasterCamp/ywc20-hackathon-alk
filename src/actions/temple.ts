@@ -189,7 +189,7 @@ export async function createReview(
         }
 
         // Update temple rating and review count
-        await updateTempleRating(templeSlug, serviceType);
+        await updateTempleRating(templeSlug);
 
         return { success: true };
     } catch (error) {
