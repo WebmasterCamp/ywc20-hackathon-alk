@@ -183,7 +183,7 @@ const TempleCard = ({ temple, serviceType, onSelect }: TempleCardProps) => {
                 <div className="flex gap-2">
                     <button
                         onClick={handleSelectClick}
-                        className="flex-1 bg-yellow-normal hover:bg-yellow-normal-hover text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                        className="flex-1 bg-yellow-normal hover:bg-yellow-normal-hover text-brown-normal font-medium py-2 px-4 rounded-lg transition-colors"
                     >
                         จองบริการ
                     </button>
