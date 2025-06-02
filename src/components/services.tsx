@@ -66,7 +66,7 @@ export default function Services() {
                         พิธีกรรมมากมาย สะดวก รวดเร็ว ใกล้คุณ
                     </p>
                 </div>
-                <div className="grid grid-cols-5 gap-3">
+                <div className="grid grid-cols-5 gap-6">
                     {services.map((service) => (
                         <Link
                             href={`/${service.type}`}

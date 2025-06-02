@@ -80,7 +80,7 @@ export default function Navbar() {
                             />
                         </Link>
                     )}
-                    {!!session && (
+                    {!session && (
                         <button
                             type="button"
                             onClick={signIn}
@@ -89,7 +89,7 @@ export default function Navbar() {
                             <img
                                 className="h-[56px] aspect-[1/1] object-cover rounded-full"
                                 src="/images/AvatarPlaceHolder.png"
-                                alt={session?.user.name}
+                                alt="placeholder"
                             />
                         </button>
                     )}
