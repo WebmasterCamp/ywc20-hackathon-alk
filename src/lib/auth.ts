@@ -45,7 +45,7 @@ export const auth = betterAuth({
     // Hardcode base URL for production
     baseURL:
         process.env.NODE_ENV === "production"
-            ? "https://www.prasarnboon.in.th"
+            ? "https://www.xn--e3cxdc4b3b2br0d.xn--o3cw4h"
             : process.env.BETTER_AUTH_URL,
     trustedOrigins: ["http://localhost:3000", "https://www.prasarnboon.in.th", "https://www.xn--e3cxdc4b3b2br0d.xn--o3cw4h"],
     socialProviders: {
