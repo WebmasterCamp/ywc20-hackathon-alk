@@ -16,6 +16,7 @@ import {
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { decodeThaiEmail } from "@/lib/utils";
 
 export default function UserProfilePage() {
     const { data: session, isPending } = authClient.useSession();
@@ -67,11 +68,11 @@ export default function UserProfilePage() {
                 setFormData({
                     id: profile.id || "",
                     name: profile.name || "",
-                    email: profile.email || "",
+                    email: decodeThaiEmail(profile.email) || "",
                     phone: profile.phone || "",
                     address: profile.address || "",
                     birthDate: formattedBirthDate,
-                    image: profile.image || "/api/placeholder/120/120",
+                    image: profile.image || "/images/AvatarPlaceHolder.png",
                 });
             } else {
                 console.error("Failed to fetch user profile");
@@ -186,11 +187,11 @@ export default function UserProfilePage() {
             setFormData({
                 id: userProfile.id || "",
                 name: userProfile.name || "",
-                email: userProfile.email || "",
+                email: decodeThaiEmail(userProfile.email) || "",
                 phone: userProfile.phone || "",
                 address: userProfile.address || "",
                 birthDate: formattedBirthDate,
-                image: userProfile.image || "/api/placeholder/120/120",
+                image: userProfile.image || "/images/AvatarPlaceHolder.png",
             });
         }
         setIsEditing(false);
@@ -251,7 +252,7 @@ export default function UserProfilePage() {
                                     <img
                                         src={
                                             formData.image ||
-                                            "/api/placeholder/120/120"
+                                            "/images/AvatarPlaceHolder.png"
                                         }
                                         alt="Profile"
                                         className="w-24 h-24 rounded-full object-cover border-4 border-yellow-normal"
@@ -400,7 +401,8 @@ export default function UserProfilePage() {
                                                     name="email"
                                                     value={formData.email}
                                                     onChange={handleInputChange}
-                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-normal focus:border-transparent"
+                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-normal focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    disabled
                                                 />
                                             ) : (
                                                 <p className="p-3 bg-gray-50 rounded-lg text-brown-normal">

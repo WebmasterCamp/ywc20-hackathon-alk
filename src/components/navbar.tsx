@@ -5,17 +5,12 @@ import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu,  MoveRight } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
+    const router = useRouter();
     const [openMobileDrawer, setOpenMobileDrawer] = useState(false);
     const { data: session } = authClient.useSession();
-
-    const signIn = async () => {
-        const data = await authClient.signIn.social({
-            provider: "google",
-        });
-        console.log(data);
-    };
 
     return (
         // <div className="bg-white w-full flex items-center fixed top-0 left-0 pl-[145px] pr-[145px] py-2.5 h-20 border-b-[1px] border-b-brown-normal">
@@ -83,7 +78,7 @@ export default function Navbar() {
                     {!session && (
                         <button
                             type="button"
-                            onClick={signIn}
+                            onClick={() => router.push('/auth')}
                             className="cursor-pointer"
                         >
                             <img
@@ -98,7 +93,7 @@ export default function Navbar() {
                     {!session && (
                         <button
                             type="button"
-                            onClick={signIn}
+                            onClick={() => router.push('/auth')}
                             className="cursor-pointer"
                         >
                             <img

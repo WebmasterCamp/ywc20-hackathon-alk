@@ -65,5 +65,8 @@ export const auth = betterAuth({
                     : (process.env.GOOGLE_CLIENT_SECRET as string),
         },
     },
+    emailAndPassword: { 
+        enabled: true, 
+    },
     plugins: [nextCookies()],
 });
