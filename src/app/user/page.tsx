@@ -246,7 +246,7 @@ export default function UserProfilePage() {
                 <div className="max-w-4xl mx-auto">
                     {/* Header */}
                     <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-                        <div className="flex items-center justify-between">
+                        <div className="flex lg:flex-row flex-col items-center justify-between">
                             <div className="flex items-center gap-6">
                                 <div className="relative">
                                     <img
@@ -277,7 +277,7 @@ export default function UserProfilePage() {
                             </div>
                             <button
                                 onClick={handleLogout}
-                                className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                                className="flex mt-2 lg:mt-0 items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
                             >
                                 <LogOut size={16} />
                                 ออกจากระบบ

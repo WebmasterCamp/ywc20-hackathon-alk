@@ -79,13 +79,9 @@ export default function Navbar() {
                         <button
                             type="button"
                             onClick={() => router.push('/auth')}
-                            className="cursor-pointer"
+                            className="cursor-pointer bg-brown-normal px-5 py-2 rounded-md text-white"
                         >
-                            <img
-                                className="h-[56px] aspect-[1/1] object-cover rounded-full"
-                                src="/images/AvatarPlaceHolder.png"
-                                alt="placeholder"
-                            />
+                            เข้าสู่ระบบ
                         </button>
                     )}
                 </div>
@@ -94,13 +90,9 @@ export default function Navbar() {
                         <button
                             type="button"
                             onClick={() => router.push('/auth')}
-                            className="cursor-pointer"
+                            className="cursor-pointer bg-brown-normal px-5 py-2 rounded-md text-white"
                         >
-                            <img
-                                className="h-[56px] aspect-[1/1] object-cover rounded-full"
-                                src="/images/AvatarPlaceHolder.png"
-                                alt="placeholder"
-                            />
+                            เข้าสู่ระบบ
                         </button>
                     )}
                     <Menu className={`${session ? "block" : "hidden"} text-brown-normal`} onClick={() => setOpenMobileDrawer(true)} />

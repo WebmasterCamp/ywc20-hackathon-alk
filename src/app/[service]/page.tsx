@@ -203,9 +203,9 @@ export default function ServicePage() {
                     </div>
                 </div>
 
-                <div className="flex gap-6">
+                <div className="flex flex-col md:flex-row gap-6">
                     {/* Left Sidebar - Location & Filters */}
-                    <div className="min-w-[350px] max-w-[350px] space-y-6">
+                    <div className="min-w-[350px] space-y-6">
                         {/* Location Picker */}
                         <div className="bg-white p-4 lg:p-6 rounded-xl shadow-sm border border-gray-200">
                             <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">

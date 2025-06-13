@@ -1,7 +1,7 @@
 function encodeToSafe(str: string): string {
   return Array.from(str)
     .map(c => c.codePointAt(0)!.toString(36)) // base36 = shorter than hex
-    .join("z"); // z is a safe delimiter not in base36 digits
+    .join("z"); // "z" is not in base36 and safe as delimiter
 }
 
 function decodeFromSafe(str: string): string {
@@ -10,16 +10,25 @@ function decodeFromSafe(str: string): string {
     .join("");
 }
 
-// Create a valid, ASCII-only "proxy" email for Better Auth
+// Check if string contains any Thai or non-ASCII character
+function hasUnicode(str: string): boolean {
+  return /[^\x00-\x7F]/.test(str);
+}
+
+// Encode only if email contains Thai or Unicode characters
 export function encodeThaiEmail(email: string): string {
+  if (!hasUnicode(email)) return email; // Return unchanged if English
+
   const [local, domain] = email.split("@");
   const safeLocal = encodeToSafe(local);
   const safeDomain = encodeToSafe(domain.replace(/\./g, "_"));
-  return `${safeLocal}@${safeDomain}.thai.local`; // ensure domain is fixed and fake
+  return `${safeLocal}@${safeDomain}.thai.local`;
 }
 
-// Decode the real Thai email from the encoded one
+// Decode only if it's our special encoded format
 export function decodeThaiEmail(fakeEmail: string): string {
+  if (!fakeEmail.endsWith(".thai.local")) return fakeEmail; // Return unchanged if not encoded
+
   const [local, domainWithTLD] = fakeEmail.split("@");
   const domainParts = domainWithTLD.split(".");
   const encodedDomain = domainParts.slice(0, -2).join("."); // remove .thai.local
